@@ -207,7 +207,7 @@ export function NumberGrid({ initialGrid }: Props) {
         <div
           role="status"
           aria-live="polite"
-          className="animate-toast-in fixed left-1/2 top-32 z-40 w-max max-w-[90vw] -translate-x-1/2 rounded-full bg-grass-800 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg"
+          className="animate-toast-in fixed left-1/2 top-44 z-40 w-max max-w-[90vw] -translate-x-1/2 rounded-full bg-grass-800 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg"
         >
           {toast}
         </div>
