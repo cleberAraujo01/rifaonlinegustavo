@@ -125,6 +125,34 @@ export default async function Home() {
           <section>
             <ProgressBar {...stats} />
           </section>
+
+          {/* Grupo de avisos no WhatsApp */}
+          {CAMPAIGN.whatsappGroupUrl && (
+            <section>
+              <a
+                href={CAMPAIGN.whatsappGroupUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-grass-100 transition-colors hover:bg-grass-50 active:bg-grass-100"
+              >
+                <span className="text-2xl" aria-hidden>
+                  📢
+                </span>
+                <span className="flex-1">
+                  <span className="block text-sm font-extrabold text-grass-900">
+                    Acompanhe a campanha no WhatsApp
+                  </span>
+                  <span className="block text-xs text-stone-500">
+                    Avisos do sorteio, progresso da meta e novidades do{" "}
+                    {CAMPAIGN.childName}
+                  </span>
+                </span>
+                <span className="font-bold text-whatsapp" aria-hidden>
+                  →
+                </span>
+              </a>
+            </section>
+          )}
         </div>
 
         {/* Coluna de história */}

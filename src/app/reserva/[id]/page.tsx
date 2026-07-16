@@ -146,6 +146,32 @@ export default async function ReservaPage({
         </div>
       )}
 
+      {/* Convite para o grupo de avisos: momento ideal — a pessoa acabou de
+          reservar/pagar e quer acompanhar o sorteio */}
+      {!isExpired && CAMPAIGN.whatsappGroupUrl && (
+        <a
+          href={CAMPAIGN.whatsappGroupUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-grass-100 transition-colors hover:bg-grass-50 active:bg-grass-100"
+        >
+          <span className="text-2xl" aria-hidden>
+            📢
+          </span>
+          <span className="flex-1">
+            <span className="block text-sm font-extrabold text-grass-900">
+              Entre no grupo da rifa no WhatsApp
+            </span>
+            <span className="block text-xs text-stone-500">
+              Acompanhe o progresso da meta e fique por dentro do sorteio
+            </span>
+          </span>
+          <span className="font-bold text-whatsapp" aria-hidden>
+            →
+          </span>
+        </a>
+      )}
+
       <p className="mt-10 text-center text-sm">
         <Link href="/" className="text-grass-700 underline">
           ← Voltar para a página da rifa

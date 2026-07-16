@@ -24,6 +24,12 @@ export const CAMPAIGN = {
   pixKeyType: "Telefone",
   whatsappPhone: "5511975636037", // formato internacional, só dígitos
 
+  // Grupo de divulgação "Rifa do Gustavo" (avisos, progresso e resultado do
+  // sorteio — comprovantes continuam no 1:1). null = esconde os botões.
+  whatsappGroupUrl: "https://chat.whatsapp.com/G7WnWBtSDRh4vQACtY4ua1" as
+    | string
+    | null,
+
   reservationHours: 6,
   maxNumbersPerOrder: 20,
 } as const;
