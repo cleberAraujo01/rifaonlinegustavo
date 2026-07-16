@@ -1,0 +1,15 @@
+Fotos usadas pelo site (nomes exatos):
+
+  hero.jpg     -> [OK, já existe] Gustavo em ação durante uma partida (topo do site).
+
+  bike.webp    -> [OK, já existe] Bicicleta elétrica do prêmio (imagem ilustrativa,
+                  o selo é adicionado automaticamente pelo site).
+
+  gustavo.jpg  -> [FALTANDO] Gustavo sorrindo fora de campo (seção "Conheça o
+                  Gustavo"). Retrato ou quadrada. Recomendado: 800px de largura.
+
+Enquanto um arquivo não existir, o site mostra o visual alternativo no lugar
+(sem quebrar nada). Basta colocar a foto aqui e recarregar a página.
+
+Dica: fotos de celular costumam ter 3-8 MB; reduza para menos de 500 KB
+(ex.: em squoosh.app) para carregar rápido no 4G.

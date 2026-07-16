@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  /* Tema futebol: verde gramado + dourado */
+  --color-grass-50: #f0fdf4;
+  --color-grass-100: #dcfce7;
+  --color-grass-200: #bbf7d0;
+  --color-grass-500: #22c55e;
+  --color-grass-600: #16a34a;
+  --color-grass-700: #15803d;
+  --color-grass-800: #166534;
+  --color-grass-900: #14532d;
+  --color-grass-950: #052e16;
+
+  --color-gold-100: #fef9c3;
+  --color-gold-400: #facc15;
+  --color-gold-500: #eab308;
+  --color-gold-600: #ca8a04;
+  --color-gold-700: #a16207;
+
+  --color-whatsapp: #25d366;
+  --color-whatsapp-dark: #128c7e;
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-grass-50);
+  color: #1c1917;
+  font-family: var(--font-sans);
+}
+
+/* Números da grade sempre com dígitos de largura fixa */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
