@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { CAMPAIGN, formatBRL } from "@/lib/config";
 import { ProgressBar } from "@/components/landing/ProgressBar";
+import { StickyHeader } from "@/components/landing/StickyHeader";
+import { StickyCtaBar } from "@/components/landing/StickyCtaBar";
 import { SmartImage } from "@/components/ui/SmartImage";
 import { getGridStateSafe } from "@/db/queries";
 
@@ -20,8 +22,15 @@ export default async function Home() {
     ? new Date(CAMPAIGN.drawDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })
     : "em breve";
 
+  const goalPct = Math.min(
+    100,
+    Math.round((stats.raisedCents / CAMPAIGN.goalCents) * 100),
+  );
+
   return (
     <main className="flex-1 pb-24">
+      <StickyHeader pct={goalPct} />
+
       {/* Hero: coluna única no mobile, texto + foto lado a lado no desktop */}
       <header className="bg-grass-900 px-5 pb-8 pt-10 text-white">
         <div className="mx-auto w-full max-w-lg md:grid md:max-w-5xl md:grid-cols-2 md:items-center md:gap-10">
@@ -70,7 +79,8 @@ export default async function Home() {
           cartões de conversão (prêmio/preço/meta) à direita, fixos na rolagem */}
       <div className="mx-auto w-full max-w-lg px-4 md:grid md:max-w-5xl md:grid-cols-5 md:items-start md:gap-8 md:px-6">
         {/* Coluna de conversão */}
-        <div className="-mt-5 space-y-4 md:sticky md:top-4 md:order-2 md:col-span-2 md:mt-8">
+        {/* top-16 = folga para o cabeçalho sticky não cobrir os cartões */}
+        <div className="-mt-5 space-y-4 md:sticky md:top-16 md:order-2 md:col-span-2 md:mt-8">
           {/* Cartão do prêmio: largura total, imagem grande e legenda destacada */}
           <section className="rounded-2xl bg-white p-4 shadow-md ring-1 ring-grass-100">
             <div className="rounded-xl bg-gold-100/70 p-3">
@@ -218,15 +228,12 @@ export default async function Home() {
         </p>
       </section>
 
-      {/* CTA fixo */}
-      <div className="fixed inset-x-0 bottom-0 border-t border-grass-100 bg-white/95 p-3 backdrop-blur">
-        <Link
-          href="/numeros"
-          className="mx-auto block max-w-lg rounded-xl bg-grass-600 py-4 text-center text-lg font-extrabold text-white shadow-lg active:bg-grass-700"
-        >
-          ESCOLHER MEUS NÚMEROS →
-        </Link>
-      </div>
+      {/* CTA fixo: só aparece quando o CTA do herói sai da tela (um CTA dominante por vez) */}
+      <StickyCtaBar
+        href="/numeros"
+        label="ESCOLHER MEUS NÚMEROS →"
+        watchId="hero-cta"
+      />
     </main>
   );
 }
