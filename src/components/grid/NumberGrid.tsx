@@ -27,7 +27,21 @@ export function NumberGrid({ initialGrid }: Props) {
   const [phoneTouched, setPhoneTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  // Painel inferior: começa compacto (só resumo) para não cobrir a grade;
+  // o formulário abre quando o comprador decide reservar.
+  const [expanded, setExpanded] = useState(false);
   const blockNavRef = useRef<HTMLDivElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  // Ao expandir o formulário, leva o foco direto para o primeiro campo.
+  useEffect(() => {
+    if (expanded) nameInputRef.current?.focus();
+  }, [expanded]);
+
+  // Sem seleção não há painel — a próxima seleção volta compacta.
+  useEffect(() => {
+    if (selected.length === 0) setExpanded(false);
+  }, [selected.length]);
 
   // Mantém a faixa ativa visível na navegação horizontal (que tem overflow).
   useEffect(() => {
@@ -284,19 +298,40 @@ export function NumberGrid({ initialGrid }: Props) {
         <div className="fixed inset-x-0 bottom-0 z-20 border-t border-grass-200 bg-white p-3 shadow-2xl">
           <div className="mx-auto max-w-lg space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="font-bold text-grass-900">
+              <span className="font-bold text-grass-900 tabular">
                 {selected.length} número{selected.length > 1 ? "s" : ""} ·{" "}
                 {formatBRL(totalCents)}
               </span>
-              <button
-                type="button"
-                onClick={() => setSelected([])}
-                className="text-stone-400 underline"
-              >
-                limpar
-              </button>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelected([])}
+                  className="text-stone-400 underline"
+                >
+                  limpar
+                </button>
+                {expanded && (
+                  <button
+                    type="button"
+                    onClick={() => setExpanded(false)}
+                    aria-expanded={expanded}
+                    aria-label="Recolher formulário e continuar escolhendo números"
+                    className="rounded-lg px-2 py-1 text-xs font-bold text-grass-700 ring-1 ring-grass-200 transition-colors hover:bg-grass-50"
+                  >
+                    ⌄ continuar escolhendo
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="flex max-h-16 flex-wrap gap-1 overflow-y-auto">
+
+            {/* Chips: uma linha compacta quando recolhido, quebra quando expandido */}
+            <div
+              className={
+                expanded
+                  ? "flex max-h-16 flex-wrap gap-1 overflow-y-auto"
+                  : "flex gap-1 overflow-x-auto pb-0.5"
+              }
+            >
               {[...selected]
                 .sort((a, b) => a - b)
                 .map((n) => (
@@ -304,12 +339,33 @@ export function NumberGrid({ initialGrid }: Props) {
                     key={n}
                     type="button"
                     onClick={() => toggle(n)}
-                    className="tabular rounded-md bg-grass-100 px-2 py-1 text-xs font-bold text-grass-800"
+                    className="tabular shrink-0 rounded-md bg-grass-100 px-2 py-1 text-xs font-bold text-grass-800"
                   >
                     {formatNumber(n)} ✕
                   </button>
                 ))}
             </div>
+
+            {/* Recolhido: só o resumo + botão para abrir o formulário,
+                deixando a grade livre para continuar selecionando */}
+            {!expanded && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setExpanded(true)}
+                  className="w-full rounded-xl bg-grass-600 py-4 text-center text-base font-extrabold text-white transition-colors hover:bg-grass-700 active:bg-grass-700"
+                >
+                  RESERVAR {selected.length} NÚMERO
+                  {selected.length > 1 ? "S" : ""} →
+                </button>
+                <p className="text-center text-xs text-stone-400">
+                  Continue escolhendo na grade — seus números ficam guardados aqui
+                </p>
+              </>
+            )}
+
+            {expanded && (
+              <>
             {/* Labels visíveis: placeholder some ao digitar e não é rótulo confiável */}
             <div>
               <label
@@ -320,6 +376,7 @@ export function NumberGrid({ initialGrid }: Props) {
               </label>
               <input
                 id="buyer-name"
+                ref={nameInputRef}
                 type="text"
                 autoComplete="name"
                 placeholder="Ex.: Maria da Silva"
@@ -384,6 +441,8 @@ export function NumberGrid({ initialGrid }: Props) {
             <p className="text-center text-xs text-stone-400">
               Reserva válida por {CAMPAIGN.reservationHours}h · pagamento via Pix na próxima tela
             </p>
+              </>
+            )}
           </div>
         </div>
       )}
