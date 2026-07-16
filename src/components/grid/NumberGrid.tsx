@@ -76,8 +76,10 @@ export function NumberGrid({ initialGrid }: Props) {
   }, [block]);
 
   // Polling: mantém a grade fresca sem recarregar a página.
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
     const timer = setInterval(async () => {
+      setRefreshing(true);
       try {
         const res = await fetch("/api/grid", { cache: "no-store" });
         if (res.ok) {
@@ -88,6 +90,8 @@ export function NumberGrid({ initialGrid }: Props) {
         }
       } catch {
         // rede instável: mantém o último estado conhecido
+      } finally {
+        setRefreshing(false);
       }
     }, POLL_MS);
     return () => clearInterval(timer);
@@ -143,10 +147,18 @@ export function NumberGrid({ initialGrid }: Props) {
     }
   }
 
+  const searchInvalid =
+    search !== "" &&
+    (Number.isNaN(parseInt(search, 10)) || parseInt(search, 10) > MAX_N);
+
   function goToSearch(value: string) {
     setSearch(value);
     const n = parseInt(value, 10);
-    if (!Number.isNaN(n) && n >= 0 && n <= MAX_N) setBlock(Math.floor(n / 100));
+    if (!Number.isNaN(n) && n >= 0 && n <= MAX_N) {
+      setBlock(Math.floor(n / 100));
+    } else if (value !== "" && !Number.isNaN(n)) {
+      showToast(`O ${value} não existe — os números vão de 000 a ${MAX_N} 😉`);
+    }
   }
 
   function submit() {
@@ -211,7 +223,13 @@ export function NumberGrid({ initialGrid }: Props) {
             placeholder="🔍 Buscar nº"
             value={search}
             onChange={(e) => goToSearch(e.target.value.replace(/\D/g, ""))}
-            className="w-28 rounded-xl border border-grass-200 bg-white px-3 py-2 text-sm tabular focus:border-grass-600 focus:outline-none"
+            aria-invalid={searchInvalid}
+            aria-label={`Buscar número de 000 a ${MAX_N}`}
+            className={`w-28 rounded-xl border bg-white px-3 py-2 text-sm tabular transition-colors focus:outline-none ${
+              searchInvalid
+                ? "border-red-400 focus:border-red-500"
+                : "border-grass-200 focus:border-grass-600"
+            }`}
           />
           <div className="flex flex-1 gap-1">
             {[1, 5, 10].map((c) => (
@@ -240,7 +258,7 @@ export function NumberGrid({ initialGrid }: Props) {
             onClick={() => setBlock((b) => Math.max(0, b - 1))}
             disabled={block === 0}
             aria-label="Faixa anterior"
-            className="absolute left-0 top-1/2 z-10 flex h-7 w-6 -translate-y-1/2 items-center justify-center rounded-md bg-white text-grass-700 ring-1 ring-grass-200 transition-opacity disabled:opacity-30"
+            className="absolute left-0 top-1/2 z-10 flex h-8 w-7 -translate-y-1/2 items-center justify-center rounded-md bg-white text-base font-bold text-grass-700 shadow-md ring-1 ring-grass-200 transition-all hover:bg-grass-50 disabled:opacity-30 disabled:shadow-none"
           >
             ‹
           </button>
@@ -255,9 +273,9 @@ export function NumberGrid({ initialGrid }: Props) {
                 data-block={b}
                 onClick={() => setBlock(b)}
                 aria-current={block === b}
-                className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold tabular transition-colors ${
+                className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold tabular transition-all ${
                   block === b
-                    ? "bg-grass-700 text-white"
+                    ? "scale-105 bg-grass-700 text-white shadow-md ring-2 ring-grass-700 ring-offset-1"
                     : "bg-white text-grass-700 ring-1 ring-grass-200 hover:bg-grass-50"
                 }`}
               >
@@ -273,7 +291,7 @@ export function NumberGrid({ initialGrid }: Props) {
             onClick={() => setBlock((b) => Math.min(BLOCKS.length - 1, b + 1))}
             disabled={block === BLOCKS.length - 1}
             aria-label="Próxima faixa"
-            className="absolute right-0 top-1/2 z-10 flex h-7 w-6 -translate-y-1/2 items-center justify-center rounded-md bg-white text-grass-700 ring-1 ring-grass-200 transition-opacity disabled:opacity-30"
+            className="absolute right-0 top-1/2 z-10 flex h-8 w-7 -translate-y-1/2 items-center justify-center rounded-md bg-white text-base font-bold text-grass-700 shadow-md ring-1 ring-grass-200 transition-all hover:bg-grass-50 disabled:opacity-30 disabled:shadow-none"
           >
             ›
           </button>
@@ -298,10 +316,23 @@ export function NumberGrid({ initialGrid }: Props) {
           </span>{" "}
           pago
         </span>
-        <span className="ml-auto shrink-0 rounded-full bg-grass-100 px-2.5 py-0.5 font-bold text-grass-800">
+        <span
+          className={`ml-auto shrink-0 rounded-full bg-grass-100 px-2.5 py-0.5 font-bold text-grass-800 ${
+            refreshing ? "animate-pulse" : ""
+          }`}
+          title={refreshing ? "Atualizando disponibilidade…" : undefined}
+        >
           {availableCount} livres
         </span>
       </div>
+
+      {/* Prova social + escassez: some enquanto ninguém garantiu número */}
+      {CAMPAIGN.totalNumbers - availableCount > 0 && (
+        <p className="mx-4 mt-2 rounded-lg bg-gold-100/70 px-3 py-1.5 text-center text-xs font-bold text-gold-800">
+          🎟️ Já garantidos: {CAMPAIGN.totalNumbers - availableCount} de{" "}
+          {CAMPAIGN.totalNumbers} · restam {availableCount}
+        </p>
+      )}
 
       {/* Grade: renderiza SÓ o bloco ativo (100 células); 10 colunas no desktop.
           Células com no mínimo 48px de altura — área de toque confortável. */}
@@ -324,8 +355,16 @@ export function NumberGrid({ initialGrid }: Props) {
             <button
               key={n}
               type="button"
-              onClick={() => toggle(n)}
-              disabled={status !== "D"}
+              onClick={() =>
+                status === "D"
+                  ? toggle(n)
+                  : showToast(
+                      `O ${formatNumber(n)} já foi escolhido${
+                        status === "P" ? " e pago" : ""
+                      } — que tal outro? 😉`,
+                    )
+              }
+              aria-disabled={status !== "D"}
               aria-pressed={isSelected}
               aria-label={`Número ${formatNumber(n)}: ${statusLabel}`}
               title={`${formatNumber(n)} · ${statusLabel}`}
@@ -333,9 +372,9 @@ export function NumberGrid({ initialGrid }: Props) {
                 isSelected
                   ? `scale-105 bg-grass-600 text-white shadow-md ring-2 ring-grass-700 ${n === lastAdded ? "animate-pop" : ""}`
                   : status === "P"
-                    ? "bg-gold-400 text-gold-900"
+                    ? "cursor-default bg-gold-400 text-gold-900"
                     : status === "R"
-                      ? "bg-stone-200 text-stone-600"
+                      ? "cursor-default bg-stone-200 text-stone-600"
                       : "bg-white text-grass-800 ring-1 ring-grass-200 hover:bg-grass-50 active:scale-95 active:bg-grass-100"
               } ${isSearched ? "ring-4 ring-gold-500" : ""}`}
             >
