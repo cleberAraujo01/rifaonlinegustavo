@@ -1,16 +1,10 @@
 import { z } from "zod";
 import { CAMPAIGN } from "@/lib/config";
+import { normalizePhoneBR } from "@/lib/phone";
 
-/**
- * Normaliza um WhatsApp brasileiro para o formato internacional (55 + DDD + número).
- * Aceita com/sem pontuação, com/sem 55. Retorna null se inválido.
- */
-export function normalizePhoneBR(raw: string): string | null {
-  let digits = raw.replace(/\D/g, "");
-  if (digits.startsWith("55") && digits.length > 11) digits = digits.slice(2);
-  if (digits.length < 10 || digits.length > 11) return null;
-  return `55${digits}`;
-}
+// A normalização mora em lib/phone.ts (sem zod) para o cliente reutilizar
+// sem inflar o bundle; aqui só re-exportamos para os consumidores do servidor.
+export { normalizePhoneBR };
 
 export const reservationSchema = z.object({
   numbers: z

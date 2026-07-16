@@ -182,8 +182,8 @@ export function NumberGrid({ initialGrid }: Props) {
         </span>
       </div>
 
-      {/* Grade: renderiza SÓ o bloco ativo (100 células) */}
-      <div className="grid grid-cols-5 gap-1.5 px-4">
+      {/* Grade: renderiza SÓ o bloco ativo (100 células); 10 colunas no desktop */}
+      <div className="grid grid-cols-5 gap-1.5 px-4 md:grid-cols-10">
         {Array.from({ length: 100 }, (_, i) => {
           const n = block * 100 + i;
           const status = grid[n];

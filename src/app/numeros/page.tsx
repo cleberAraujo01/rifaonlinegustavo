@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function NumerosPage() {
   const { grid } = await getGridStateSafe();
   return (
-    <main className="mx-auto w-full max-w-lg flex-1">
+    <main className="mx-auto w-full max-w-lg flex-1 md:max-w-3xl">
       <header className="flex items-center justify-between bg-grass-900 px-4 py-3 text-white">
         <Link href="/" className="text-sm text-grass-100">
           ← Voltar
