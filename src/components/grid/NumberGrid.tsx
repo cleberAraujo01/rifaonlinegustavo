@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CAMPAIGN, formatBRL, formatNumber } from "@/lib/config";
+import { maskPhoneBR, normalizePhoneBR } from "@/lib/phone";
 import { reservarNumeros } from "@/actions/reservar";
 
 /** 'D' = disponível, 'R' = reservado, 'P' = pago — 1 char por número. */
@@ -23,6 +24,7 @@ export function NumberGrid({ initialGrid }: Props) {
   const [search, setSearch] = useState("");
   const [buyerName, setBuyerName] = useState("");
   const [buyerPhone, setBuyerPhone] = useState("");
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -113,11 +115,15 @@ export function NumberGrid({ initialGrid }: Props) {
 
   const searched = search !== "" ? parseInt(search, 10) : null;
   const totalCents = selected.length * CAMPAIGN.pricePerNumberCents;
-  const canReserve =
-    selected.length > 0 &&
-    buyerName.trim().length >= 3 &&
-    buyerPhone.replace(/\D/g, "").length >= 10 &&
-    !pending;
+
+  // WhatsApp é o canal de confirmação do pagamento: só libera a reserva
+  // com um número válido (mesma regra do servidor, em tempo real).
+  const phoneValid = normalizePhoneBR(buyerPhone) !== null;
+  const phoneDigits = buyerPhone.replace(/\D/g, "").length;
+  const showPhoneError =
+    !phoneValid && buyerPhone !== "" && (phoneTouched || phoneDigits >= 11);
+  const nameValid = buyerName.trim().length >= 3;
+  const canReserve = selected.length > 0 && nameValid && phoneValid && !pending;
 
   return (
     <div className="pb-72">
@@ -246,23 +252,60 @@ export function NumberGrid({ initialGrid }: Props) {
                   </button>
                 ))}
             </div>
-            <input
-              type="text"
-              autoComplete="name"
-              placeholder="Seu nome completo"
-              value={buyerName}
-              onChange={(e) => setBuyerName(e.target.value)}
-              className="w-full rounded-xl border border-grass-200 px-3 py-3 text-sm focus:border-grass-600 focus:outline-none"
-            />
-            <input
-              type="tel"
-              autoComplete="tel"
-              inputMode="numeric"
-              placeholder="Seu WhatsApp com DDD (ex: 11 91234-5678)"
-              value={buyerPhone}
-              onChange={(e) => setBuyerPhone(e.target.value)}
-              className="w-full rounded-xl border border-grass-200 px-3 py-3 text-sm focus:border-grass-600 focus:outline-none"
-            />
+            {/* Labels visíveis: placeholder some ao digitar e não é rótulo confiável */}
+            <div>
+              <label
+                htmlFor="buyer-name"
+                className="mb-1 block text-xs font-semibold text-stone-600"
+              >
+                Nome completo
+              </label>
+              <input
+                id="buyer-name"
+                type="text"
+                autoComplete="name"
+                placeholder="Ex.: Maria da Silva"
+                value={buyerName}
+                onChange={(e) => setBuyerName(e.target.value)}
+                className="w-full rounded-xl border border-grass-200 px-3 py-3 text-sm transition-colors focus:border-grass-600 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="buyer-phone"
+                className="mb-1 block text-xs font-semibold text-stone-600"
+              >
+                WhatsApp (com DDD) — usado para confirmar seu pagamento
+              </label>
+              <input
+                id="buyer-phone"
+                type="tel"
+                autoComplete="tel-national"
+                inputMode="numeric"
+                maxLength={16}
+                placeholder="(11) 91234-5678"
+                value={buyerPhone}
+                onChange={(e) => setBuyerPhone(maskPhoneBR(e.target.value))}
+                onBlur={() => setPhoneTouched(true)}
+                aria-invalid={showPhoneError}
+                aria-describedby={showPhoneError ? "buyer-phone-error" : undefined}
+                className={`w-full rounded-xl border px-3 py-3 text-sm transition-colors focus:outline-none ${
+                  showPhoneError
+                    ? "border-red-400 focus:border-red-500"
+                    : phoneValid
+                      ? "border-grass-500 focus:border-grass-600"
+                      : "border-grass-200 focus:border-grass-600"
+                }`}
+              />
+              {showPhoneError && (
+                <p
+                  id="buyer-phone-error"
+                  className="mt-1 text-xs font-semibold text-red-600"
+                >
+                  Número incompleto — confira o DDD e o celular, ex.: (11) 91234-5678
+                </p>
+              )}
+            </div>
             {error && (
               <p className="rounded-lg bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">
                 {error}
