@@ -174,7 +174,7 @@ export default async function Home() {
           {/* Conheça o Gustavo */}
           <section className="mt-8">
             <h2 className="mb-4 text-xl font-extrabold text-grass-900">
-              Conheça o {CAMPAIGN.childName}
+              ⚽ Ajude um sonho a cruzar o oceano!
             </h2>
 
             {videos.length > 0 && (
@@ -202,21 +202,53 @@ export default async function Home() {
               />
               <div className="space-y-3 text-sm leading-relaxed text-stone-700">
                 <p>
-                  O {CAMPAIGN.childName} é um <strong>guerreiro desde o primeiro
-                  dia de vida</strong>. Ele nasceu enfrentando uma batalha intensa —
-                  e venceu, mostrando desde cedo uma força que impressiona todo
-                  mundo à sua volta.
+                  Desde pequeno, nosso filho sempre foi movido por desafios. Com{" "}
+                  <strong>determinação, dedicação e muita perseverança</strong>,
+                  ele nunca desistiu de lutar pelos seus objetivos.
                 </p>
                 <p>
-                  Foi no futebol que essa garra encontrou o seu lugar. Bola no pé,
-                  disciplina nos treinos e um sonho grande: viver do esporte que
-                  ele ama.
+                  Foi no futebol que essa garra encontrou o seu lugar. Bola no
+                  pé, disciplina nos treinos e um sonho enorme no coração:{" "}
+                  <strong>viver do esporte que ele ama</strong>.
                 </p>
                 <p>
                   Agora chegou a oportunidade da vida dele:{" "}
-                  <strong>fazer testes em clubes de futebol de Portugal</strong>.
-                  Cada número desta rifa ajuda a pagar a viagem — e você ainda
-                  concorre a uma {CAMPAIGN.prize.toLowerCase()}. 💚
+                  <strong>
+                    realizar testes em importantes clubes de futebol de Portugal
+                  </strong>
+                  , uma chance única de mostrar seu talento, adquirir
+                  experiência internacional e dar um grande passo rumo ao sonho
+                  de se tornar jogador profissional.
+                </p>
+                <p>
+                  Para que essa oportunidade se torne realidade, estamos
+                  promovendo uma <strong>rifa beneficente</strong>. Todo o valor
+                  arrecadado será destinado às despesas com passagens,
+                  hospedagem, alimentação e demais custos da viagem.
+                </p>
+                <p className="font-bold text-grass-900">
+                  🎁 E tem um super prêmio para você!
+                </p>
+                <p>
+                  Ao adquirir um número, além de contribuir para a realização
+                  desse sonho, você concorre a uma{" "}
+                  <strong>{CAMPAIGN.prize.toLowerCase()}</strong>.
+                </p>
+                <p>
+                  💚 Cada número vendido representa mais um passo para que esse
+                  sonho saia do papel e se torne realidade.
+                </p>
+                <p>
+                  Se você não puder participar da rifa,{" "}
+                  <strong>
+                    compartilhe esta campanha com seus amigos e familiares
+                  </strong>
+                  . Sua ajuda, de qualquer forma, faz toda a diferença.
+                </p>
+                <p>
+                  Muito obrigado por acreditar no talento, na dedicação e no
+                  futuro do nosso filho. Que Deus abençoe grandemente cada
+                  pessoa que contribuir com essa caminhada! 🙏
                 </p>
               </div>
             </div>
