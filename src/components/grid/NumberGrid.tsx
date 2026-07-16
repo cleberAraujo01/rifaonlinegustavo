@@ -30,8 +30,33 @@ export function NumberGrid({ initialGrid }: Props) {
   // Painel inferior: começa compacto (só resumo) para não cobrir a grade;
   // o formulário abre quando o comprador decide reservar.
   const [expanded, setExpanded] = useState(false);
+  // Feedback efêmero: toast de aviso e chips recém-adicionados piscando.
+  const [toast, setToast] = useState<string | null>(null);
+  const [flashIds, setFlashIds] = useState<number[]>([]);
+  const [lastAdded, setLastAdded] = useState<number | null>(null);
   const blockNavRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function showToast(message: string) {
+    setToast(message);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 2600);
+  }
+
+  function flashChips(ids: number[]) {
+    setFlashIds(ids);
+    if (flashTimer.current) clearTimeout(flashTimer.current);
+    flashTimer.current = setTimeout(() => setFlashIds([]), 1600);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current);
+      if (flashTimer.current) clearTimeout(flashTimer.current);
+    };
+  }, []);
 
   // Ao expandir o formulário, leva o foco direto para o primeiro campo.
   useEffect(() => {
@@ -76,13 +101,16 @@ export function NumberGrid({ initialGrid }: Props) {
   function toggle(n: number) {
     if (grid[n] !== "D") return;
     setError(null);
-    setSelected((prev) =>
-      prev.includes(n)
-        ? prev.filter((x) => x !== n)
-        : prev.length >= CAMPAIGN.maxNumbersPerOrder
-          ? prev
-          : [...prev, n],
-    );
+    if (selected.includes(n)) {
+      setSelected((prev) => prev.filter((x) => x !== n));
+      return;
+    }
+    if (selected.length >= CAMPAIGN.maxNumbersPerOrder) {
+      showToast(`Máximo de ${CAMPAIGN.maxNumbersPerOrder} números por reserva`);
+      return;
+    }
+    setSelected((prev) => [...prev, n]);
+    setLastAdded(n);
   }
 
   function pickRandom(count: number) {
@@ -90,8 +118,12 @@ export function NumberGrid({ initialGrid }: Props) {
     for (let n = 0; n < CAMPAIGN.totalNumbers; n++) {
       if (grid[n] === "D" && !selected.includes(n)) pool.push(n);
     }
-    const picked: number[] = [];
     const room = CAMPAIGN.maxNumbersPerOrder - selected.length;
+    if (room <= 0) {
+      showToast(`Máximo de ${CAMPAIGN.maxNumbersPerOrder} números por reserva`);
+      return;
+    }
+    const picked: number[] = [];
     for (let i = 0; i < Math.min(count, room, pool.length); i++) {
       const idx = Math.floor(Math.random() * pool.length);
       picked.push(pool.splice(idx, 1)[0]);
@@ -99,6 +131,15 @@ export function NumberGrid({ initialGrid }: Props) {
     if (picked.length > 0) {
       setSelected((prev) => [...prev, ...picked]);
       setBlock(Math.floor(picked[0] / 100));
+      // Os sorteados podem cair em faixas fora da tela: o toast + os chips
+      // piscando no painel confirmam que a ação funcionou.
+      showToast(
+        picked.length === 1
+          ? "🎲 1 número adicionado à sua seleção!"
+          : `🎲 ${picked.length} números adicionados à sua seleção!` +
+              (picked.length < count ? ` (limite de ${CAMPAIGN.maxNumbersPerOrder})` : ""),
+      );
+      flashChips(picked);
     }
   }
 
@@ -149,6 +190,17 @@ export function NumberGrid({ initialGrid }: Props) {
 
   return (
     <div className="pb-72">
+      {/* Toast de feedback (aleatórios, limites, avisos) */}
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="animate-toast-in fixed left-1/2 top-32 z-40 w-max max-w-[90vw] -translate-x-1/2 rounded-full bg-grass-800 px-4 py-2 text-center text-sm font-semibold text-white shadow-lg"
+        >
+          {toast}
+        </div>
+      )}
+
       {/* Busca + aleatórios */}
       <div className="sticky top-0 z-10 space-y-2 border-b border-grass-100 bg-grass-50/95 px-4 py-3 backdrop-blur">
         <div className="flex gap-2">
@@ -279,7 +331,7 @@ export function NumberGrid({ initialGrid }: Props) {
               title={`${formatNumber(n)} · ${statusLabel}`}
               className={`tabular flex min-h-12 items-center justify-center rounded-lg text-sm font-bold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grass-700 focus-visible:ring-offset-1 ${
                 isSelected
-                  ? "scale-105 bg-grass-600 text-white shadow-md ring-2 ring-grass-700"
+                  ? `scale-105 bg-grass-600 text-white shadow-md ring-2 ring-grass-700 ${n === lastAdded ? "animate-pop" : ""}`
                   : status === "P"
                     ? "bg-gold-400 text-gold-900"
                     : status === "R"
@@ -298,7 +350,11 @@ export function NumberGrid({ initialGrid }: Props) {
         <div className="fixed inset-x-0 bottom-0 z-20 border-t border-grass-200 bg-white p-3 shadow-2xl">
           <div className="mx-auto max-w-lg space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="font-bold text-grass-900 tabular">
+              {/* key remonta o span a cada mudança → replay da animação */}
+              <span
+                key={selected.length}
+                className="animate-pop font-bold text-grass-900 tabular"
+              >
                 {selected.length} número{selected.length > 1 ? "s" : ""} ·{" "}
                 {formatBRL(totalCents)}
               </span>
@@ -335,14 +391,31 @@ export function NumberGrid({ initialGrid }: Props) {
               {[...selected]
                 .sort((a, b) => a - b)
                 .map((n) => (
-                  <button
+                  <span
                     key={n}
-                    type="button"
-                    onClick={() => toggle(n)}
-                    className="tabular shrink-0 rounded-md bg-grass-100 px-2 py-1 text-xs font-bold text-grass-800"
+                    className={`flex shrink-0 items-stretch overflow-hidden rounded-md bg-grass-100 text-xs font-bold text-grass-800 ${
+                      flashIds.includes(n) ? "animate-chip-flash" : ""
+                    }`}
                   >
-                    {formatNumber(n)} ✕
-                  </button>
+                    {/* Número navega até a faixa dele na grade */}
+                    <button
+                      type="button"
+                      onClick={() => setBlock(Math.floor(n / 100))}
+                      title={`Ver o ${formatNumber(n)} na grade`}
+                      aria-label={`Ir para a faixa do número ${formatNumber(n)}`}
+                      className="tabular py-1 pl-2 pr-1 transition-colors hover:bg-grass-200"
+                    >
+                      {formatNumber(n)}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => toggle(n)}
+                      aria-label={`Remover o número ${formatNumber(n)} da seleção`}
+                      className="px-1.5 py-1 text-grass-700 transition-colors hover:bg-red-100 hover:text-red-600"
+                    >
+                      ✕
+                    </button>
+                  </span>
                 ))}
             </div>
 

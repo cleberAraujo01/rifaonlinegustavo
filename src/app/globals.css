@@ -36,3 +36,30 @@ body {
 .tabular {
   font-variant-numeric: tabular-nums;
 }
+
+/* Micro-animações de feedback (respeitam prefers-reduced-motion) */
+@keyframes pop {
+  0% { transform: scale(0.85); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, -8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+@keyframes chip-flash {
+  0%, 100% { background-color: var(--color-grass-100); }
+  50% { background-color: var(--color-gold-400); }
+}
+
+.animate-pop { animation: pop 0.2s ease-out; }
+.animate-toast-in { animation: toast-in 0.25s ease-out; }
+.animate-chip-flash { animation: chip-flash 0.7s ease-in-out 2; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pop,
+  .animate-toast-in,
+  .animate-chip-flash {
+    animation: none;
+  }
+}
