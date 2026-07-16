@@ -1,0 +1,10 @@
+Vídeos da campanha exibidos na seção "Conheça o Gustavo":
+
+  gustavo.mp4    -> primeiro vídeo
+  gustavo-2.mp4  -> segundo vídeo (opcional)
+  poster.jpg     -> (opcional) capa do primeiro vídeo; sem ela o player
+                    mostra o primeiro quadro do próprio vídeo
+
+Os players aparecem automaticamente para os arquivos que existirem —
+nenhuma mudança de código é necessária. Formato recomendado: MP4
+(H.264 + AAC), idealmente abaixo de ~30 MB por arquivo.

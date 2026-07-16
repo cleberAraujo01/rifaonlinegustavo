@@ -1,5 +1,8 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import Link from "next/link";
 import { CAMPAIGN, formatBRL } from "@/lib/config";
+import { CampaignVideo } from "@/components/landing/CampaignVideo";
 import { ProgressBar } from "@/components/landing/ProgressBar";
 import { StickyHeader } from "@/components/landing/StickyHeader";
 import { StickyCtaBar } from "@/components/landing/StickyCtaBar";
@@ -16,8 +19,19 @@ const steps = [
   { emoji: "4️⃣", title: "Envie o comprovante", text: "Direto no WhatsApp, com mensagem já pronta. Confirmado = número garantido." },
 ];
 
+// Vídeos opcionais: os arquivos que existirem em public/videos/ aparecem na
+// seção "Conheça o Gustavo" (capa própria opcional em public/videos/poster.jpg).
+const VIDEO_SOURCES = ["/videos/gustavo.mp4", "/videos/gustavo-2.mp4"];
+const VIDEO_POSTER = "/videos/poster.jpg";
+
 export default async function Home() {
   const stats = await getGridStateSafe();
+  const videos = VIDEO_SOURCES.filter((src) =>
+    existsSync(join(process.cwd(), "public", src)),
+  );
+  const videoPoster = existsSync(join(process.cwd(), "public", VIDEO_POSTER))
+    ? VIDEO_POSTER
+    : undefined;
   const drawDateLabel = CAMPAIGN.drawDate
     ? new Date(CAMPAIGN.drawDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })
     : "em breve";
@@ -162,6 +176,22 @@ export default async function Home() {
             <h2 className="mb-4 text-xl font-extrabold text-grass-900">
               Conheça o {CAMPAIGN.childName}
             </h2>
+
+            {videos.length > 0 && (
+              <div
+                className={`mb-4 grid gap-4 ${videos.length > 1 ? "sm:grid-cols-2" : ""}`}
+              >
+                {videos.map((src, i) => (
+                  <CampaignVideo
+                    key={src}
+                    src={src}
+                    poster={i === 0 ? videoPoster : undefined}
+                    label={`Vídeo ${videos.length > 1 ? `${i + 1} ` : ""}do ${CAMPAIGN.childName} convidando você a apoiar a rifa`}
+                  />
+                ))}
+              </div>
+            )}
+
             <div className="rounded-2xl bg-white p-4 ring-1 ring-grass-100 sm:flex sm:gap-4">
               {/* Foto dele sorrindo fora de campo: public/images/gustavo.jpg */}
               <SmartImage
