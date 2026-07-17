@@ -318,6 +318,16 @@ export default async function Home() {
         <p className="mt-1">
           Organizado por {CAMPAIGN.organizerName} · Dúvidas? Chama no WhatsApp.
         </p>
+        {/* Anti-golpe: referência do endereço oficial contra sites clonados */}
+        <p className="mx-auto mt-4 flex max-w-md items-center justify-center gap-1.5 rounded-xl bg-white px-4 py-2.5 text-xs font-semibold text-grass-800 ring-1 ring-grass-200">
+          <ShieldCheck className="h-4 w-4 shrink-0 text-grass-700" aria-hidden />
+          <span>
+            Site oficial:{" "}
+            <strong>{CAMPAIGN.siteUrl.replace("https://", "")}</strong>.
+            Desconfie de qualquer outro endereço. No Pix, o favorecido é sempre{" "}
+            <strong>{CAMPAIGN.pixHolderName}</strong>.
+          </span>
+        </p>
       </section>
 
       {/* CTA fixo: só aparece quando o CTA do herói sai da tela (um CTA dominante por vez) */}

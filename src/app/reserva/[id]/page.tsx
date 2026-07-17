@@ -6,6 +6,7 @@ import {
   Clock,
   Megaphone,
   MessageCircle,
+  ShieldCheck,
   TicketCheck,
 } from "lucide-react";
 import {
@@ -127,9 +128,24 @@ export default async function ReservaPage({
               pixKey={CAMPAIGN.pixKey}
               pixKeyType={CAMPAIGN.pixKeyType}
             />
-            <p className="mt-2 text-xs text-stone-500">
-              Favorecido: {CAMPAIGN.organizerName}
-            </p>
+            {/* Anti-golpe: o app do banco sempre mostra o favorecido antes de
+                confirmar — é o ponto de verificação contra sites clonados */}
+            <div className="mt-2 rounded-xl border-2 border-gold-500 bg-gold-100/70 px-3 py-3">
+              <p className="flex items-center gap-1.5 text-base font-extrabold text-grass-900">
+                <ShieldCheck
+                  className="h-5 w-5 shrink-0 text-grass-700"
+                  aria-hidden
+                />
+                Favorecido: {CAMPAIGN.pixHolderName}
+              </p>
+              <p className="mt-1.5 text-sm leading-relaxed text-stone-700">
+                Antes de confirmar o Pix, confira no app do seu banco se o
+                favorecido é <strong>{CAMPAIGN.pixHolderName}</strong>. Nome
+                diferente? <strong className="text-red-700">Não pague.</strong>{" "}
+                Você pode estar em um site falso. O único site oficial é{" "}
+                <strong>{CAMPAIGN.siteUrl.replace("https://", "")}</strong>.
+              </p>
+            </div>
             <p className="mt-2 rounded-lg bg-gold-100 px-3 py-2 text-xs text-gold-700">
               Se a rifa não for totalmente vendida até a data do sorteio,
               você recebe <strong>100% do valor de volta</strong> via Pix.

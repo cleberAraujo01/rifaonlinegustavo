@@ -22,6 +22,9 @@ export const CAMPAIGN = {
 
   pixKey: "11975636037",
   pixKeyType: "Telefone",
+  // Nome completo como aparece no app do banco na hora do Pix — é o que o
+  // comprador confere para se proteger de sites clonados.
+  pixHolderName: "Cleber Lopes da Silva Araujo",
   whatsappPhone: "5511975636037", // formato internacional, só dígitos
 
   // URL pública canônica do site (usada em links enviados por WhatsApp,
