@@ -99,10 +99,11 @@ export default async function Home() {
           <section className="rounded-2xl bg-white p-4 shadow-md ring-1 ring-grass-100">
             <div className="rounded-xl bg-gold-100/70 p-3">
               <SmartImage
-                src="/images/bike.webp"
+                src="/images/bike.png"
                 alt={`Prêmio da rifa: ${CAMPAIGN.prize} (imagem ilustrativa)`}
                 className="h-[260px] w-full rounded-lg bg-white"
                 fit="contain"
+                badge="imagem ilustrativa"
                 sizes="(max-width: 768px) 100vw, 400px"
               />
               <div className="mt-3 text-center">
@@ -111,9 +112,6 @@ export default async function Home() {
                 </p>
                 <p className="text-xl font-extrabold text-gold-800">
                   {CAMPAIGN.prize}
-                </p>
-                <p className="mt-1 text-[11px] text-stone-400">
-                  imagem ilustrativa
                 </p>
               </div>
             </div>
