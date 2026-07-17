@@ -24,6 +24,10 @@ export const CAMPAIGN = {
   pixKeyType: "Telefone",
   whatsappPhone: "5511975636037", // formato internacional, só dígitos
 
+  // URL pública canônica do site (usada em links enviados por WhatsApp,
+  // que precisam funcionar mesmo quando gerados no ambiente local)
+  siteUrl: "https://rifaonlinegustavo.vercel.app",
+
   // Grupo de divulgação "Rifa do Gustavo" (avisos, progresso e resultado do
   // sorteio — comprovantes continuam no 1:1). null = esconde os botões.
   whatsappGroupUrl: "https://chat.whatsapp.com/G7WnWBtSDRh4vQACtY4ua1" as
@@ -66,6 +70,9 @@ export function buildReservationMessage(
  * Mensagem de agradecimento que o organizador envia ao comprador após
  * confirmar o pagamento no painel. O link do pedido serve de comprovante
  * permanente (auditável) com os números dourados na tela.
+ *
+ * ⚠️ Sem emojis de propósito: o WhatsApp Desktop no Windows corrompe
+ * emojis recebidos via link wa.me?text=... (viram "�").
  */
 export function buildConfirmationMessage(
   numbers: number[],
@@ -77,10 +84,10 @@ export function buildConfirmationMessage(
   const nums = numbers.map(formatNumber).join(", ");
   const total = formatBRL(numbers.length * CAMPAIGN.pricePerNumberCents);
   return (
-    `🎉 *Pagamento confirmado, ${firstName}!*\n\n` +
+    `*Pagamento confirmado, ${firstName}!*\n\n` +
     `Seu${plural ? "s" : ""} número${plural ? "s" : ""} da sorte na Rifa do ${CAMPAIGN.childName}: *${nums}*\n` +
-    `Valor: ${total} ✅\n\n` +
-    `📄 Seu comprovante permanente: ${orderUrl}\n\n` +
-    `Muito obrigado por fazer parte desse sonho! Boa sorte no sorteio! ⚽💚`
+    `Valor: ${total}\n\n` +
+    `Seu comprovante permanente:\n${orderUrl}\n\n` +
+    `Muito obrigado por fazer parte desse sonho! Boa sorte no sorteio!`
   );
 }

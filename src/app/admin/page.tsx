@@ -66,10 +66,9 @@ export default async function AdminPage() {
     loadOrders(),
   ]);
 
-  // Origem pública do site para o link-comprovante nas mensagens de confirmação.
-  const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000";
+  // URL canônica de produção: o link-comprovante precisa funcionar no
+  // celular do comprador mesmo quando a confirmação é feita do ambiente local.
+  const siteUrl = CAMPAIGN.siteUrl;
 
   const pct = Math.round((stats.raisedCents / CAMPAIGN.goalCents) * 100);
   const freeCount =
