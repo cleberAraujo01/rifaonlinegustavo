@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { cancelarPedido, confirmarPagamento } from "@/actions/admin";
-import { formatBRL, formatNumber } from "@/lib/config";
+import { buildConfirmationMessage, formatBRL, formatNumber } from "@/lib/config";
 
 type Props = {
   orderId: string;
@@ -12,6 +12,8 @@ type Props = {
   totalCents: number;
   createdAtIso: string;
   isPaid: boolean;
+  /** Origem pública do site (para montar o link do comprovante). */
+  siteUrl: string;
 };
 
 export function OrderCard({
@@ -22,6 +24,7 @@ export function OrderCard({
   totalCents,
   createdAtIso,
   isPaid,
+  siteUrl,
 }: Props) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -87,10 +90,29 @@ export function OrderCard({
             ✓ Confirmar
           </button>
         )}
+        {isPaid && (
+          /* Agradecimento com os números e o link-comprovante do pedido:
+             abre a conversa do comprador com a mensagem pronta */
+          <a
+            href={`https://wa.me/${buyerPhone}?text=${encodeURIComponent(
+              buildConfirmationMessage(
+                numbers,
+                buyerName,
+                `${siteUrl}/reserva/${orderId}`,
+              ),
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 rounded-lg bg-whatsapp py-2 text-center text-sm font-extrabold text-white active:bg-whatsapp-dark"
+          >
+            📤 Enviar confirmação
+          </a>
+        )}
         <a
           href={`https://wa.me/${buyerPhone}`}
           target="_blank"
           rel="noopener noreferrer"
+          aria-label={`Abrir conversa com ${buyerName} no WhatsApp`}
           className="rounded-lg bg-whatsapp px-3 py-2 text-sm font-extrabold text-white"
         >
           💬

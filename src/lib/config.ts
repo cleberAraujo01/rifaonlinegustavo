@@ -61,3 +61,26 @@ export function buildReservationMessage(
     `no nome de ${buyerName}. Total: ${total}. Segue o comprovante do Pix:`
   );
 }
+
+/**
+ * Mensagem de agradecimento que o organizador envia ao comprador após
+ * confirmar o pagamento no painel. O link do pedido serve de comprovante
+ * permanente (auditável) com os números dourados na tela.
+ */
+export function buildConfirmationMessage(
+  numbers: number[],
+  buyerName: string,
+  orderUrl: string,
+): string {
+  const firstName = buyerName.trim().split(/\s+/)[0];
+  const plural = numbers.length > 1;
+  const nums = numbers.map(formatNumber).join(", ");
+  const total = formatBRL(numbers.length * CAMPAIGN.pricePerNumberCents);
+  return (
+    `🎉 *Pagamento confirmado, ${firstName}!*\n\n` +
+    `Seu${plural ? "s" : ""} número${plural ? "s" : ""} da sorte na Rifa do ${CAMPAIGN.childName}: *${nums}*\n` +
+    `Valor: ${total} ✅\n\n` +
+    `📄 Seu comprovante permanente: ${orderUrl}\n\n` +
+    `Muito obrigado por fazer parte desse sonho! Boa sorte no sorteio! ⚽💚`
+  );
+}

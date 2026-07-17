@@ -28,6 +28,8 @@ export const metadata: Metadata = {
     description,
     type: "website",
     locale: "pt_BR",
+    // Foto do Gustavo no cartão de pré-visualização (WhatsApp, redes sociais)
+    images: [{ url: "/images/og-gustavo.jpg", alt: `Foto do ${CAMPAIGN.childName} jogando futsal` }],
   },
 };
 

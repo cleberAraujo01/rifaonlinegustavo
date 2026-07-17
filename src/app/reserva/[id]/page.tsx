@@ -17,6 +17,17 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: `Sua reserva · Rifa do ${CAMPAIGN.childName}`,
   robots: { index: false },
+  // Cartão de pré-visualização do link-comprovante enviado no WhatsApp
+  openGraph: {
+    title: `Comprovante · Rifa do ${CAMPAIGN.childName} ⚽`,
+    description: `Seus números da sorte na rifa solidária do ${CAMPAIGN.childName}. Sorteio pela Loteria Federal.`,
+    images: [
+      {
+        url: "/images/og-gustavo.jpg",
+        alt: `Foto do ${CAMPAIGN.childName} jogando futsal`,
+      },
+    ],
+  },
 };
 
 const UUID_RE =

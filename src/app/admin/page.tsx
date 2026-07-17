@@ -66,6 +66,11 @@ export default async function AdminPage() {
     loadOrders(),
   ]);
 
+  // Origem pública do site para o link-comprovante nas mensagens de confirmação.
+  const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000";
+
   const pct = Math.round((stats.raisedCents / CAMPAIGN.goalCents) * 100);
   const freeCount =
     CAMPAIGN.totalNumbers - stats.paidCount - stats.reservedCount;
@@ -124,6 +129,7 @@ export default async function AdminPage() {
                 totalCents={o.totalCents}
                 createdAtIso={o.createdAt.toISOString()}
                 isPaid={false}
+                siteUrl={siteUrl}
               />
             ))}
           </div>
@@ -151,6 +157,7 @@ export default async function AdminPage() {
                 totalCents={o.totalCents}
                 createdAtIso={o.createdAt.toISOString()}
                 isPaid
+                siteUrl={siteUrl}
               />
             ))}
           </div>
