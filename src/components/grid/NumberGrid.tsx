@@ -551,7 +551,7 @@ export function NumberGrid({ initialGrid }: Props) {
               {pending ? "Reservando..." : `RESERVAR POR ${formatBRL(totalCents)} →`}
             </button>
             <p className="text-center text-xs text-stone-400">
-              Reserva válida por {CAMPAIGN.reservationHours}h · pagamento via Pix na próxima tela
+              Reserva válida por {CAMPAIGN.reservationLabel} · pagamento via Pix na próxima tela
             </p>
               </>
             )}

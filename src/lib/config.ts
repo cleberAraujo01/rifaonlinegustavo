@@ -34,7 +34,8 @@ export const CAMPAIGN = {
     | string
     | null,
 
-  reservationHours: 6,
+  reservationHours: 24 * 7, // 1 semana para pagar; depois a reserva expira sozinha
+  reservationLabel: "1 semana", // como o prazo aparece nos textos do site
   maxNumbersPerOrder: 20,
 } as const;
 

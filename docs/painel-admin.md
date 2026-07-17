@@ -33,10 +33,10 @@ No topo do painel, a visão geral da campanha em tempo real:
 | **Arrecadado** | Soma apenas dos números **confirmados como pagos** × R$ 40 (valores em reserva não contam) |
 | **% da meta** | Progresso sobre a meta de R$ 25.000, com barra visual |
 | **✅ Pagos** | Números com pagamento confirmado |
-| **🔒 Reservados** | Números com reserva ativa (dentro do prazo de 6h) |
+| **🔒 Reservados** | Números com reserva ativa (dentro do prazo de 1 semana) |
 | **⬜ Livres** | Números disponíveis na grade |
 
-Reservas vencidas (mais de 6h sem confirmação) **não aparecem como reservadas** — a expiração é automática ("lazy"): o sistema as trata como livres na leitura e as libera de vez na próxima reserva, sem nenhuma ação do organizador.
+Reservas vencidas (mais de 1 semana sem confirmação) **não aparecem como reservadas** — a expiração é automática ("lazy"): o sistema as trata como livres na leitura e as libera de vez na próxima reserva, sem nenhuma ação do organizador. O prazo é configurável em `src/lib/config.ts` (`reservationHours` + `reservationLabel`).
 
 ## Lista "⏳ Aguardando pagamento"
 
@@ -68,4 +68,4 @@ Abaixo fica a lista **"✅ Confirmados"**, com os mesmos cartões (sem o botão 
 2. Achar o cartão pelo nome na lista "Aguardando pagamento".
 3. Conferir se o valor do comprovante bate com o valor do cartão.
 4. Tocar em **✓ Confirmar**. Pronto — a grade pública atualiza em até ~15 segundos.
-5. Reserva pendente há horas sem comprovante? Tocar em **💬** e cobrar gentilmente — ou não fazer nada: em 6h ela expira sozinha.
+5. Reserva pendente há dias sem comprovante? Tocar em **💬** e cobrar gentilmente — ou não fazer nada: em 1 semana ela expira sozinha.

@@ -50,4 +50,4 @@ A regra de negócio editável (preço, meta, chave Pix, WhatsApp, data do sortei
 
 ## Garantia anti-concorrência
 
-Duas pessoas não conseguem reservar o mesmo número: a reserva roda em **transação Postgres** com captura atômica (`UPDATE ... WHERE status = 'available'`). Se o rowcount não bater com a quantidade pedida, a transação inteira reverte e o comprador é avisado de quais números perdeu. Reservas não pagas **expiram em 6h** automaticamente (expiração lazy, sem cron).
+Duas pessoas não conseguem reservar o mesmo número: a reserva roda em **transação Postgres** com captura atômica (`UPDATE ... WHERE status = 'available'`). Se o rowcount não bater com a quantidade pedida, a transação inteira reverte e o comprador é avisado de quais números perdeu. Reservas não pagas **expiram em 1 semana** automaticamente (expiração lazy, sem cron; prazo configurável em `src/lib/config.ts`).
