@@ -7,9 +7,17 @@ type Props = {
   pct: number;
 };
 
-/** "0,4%" vira "<1%" — mais honesto que um "0%" com dinheiro já em caixa. */
+/**
+ * Abaixo de 1% mostra uma casa decimal ("0,5%") — nunca um "0%" enganoso
+ * com dinheiro já em caixa, nem "<1%" que parece erro de renderização.
+ */
 export function formatPct(pct: number): string {
-  if (pct > 0 && pct < 1) return "<1%";
+  if (pct > 0 && pct < 1) {
+    return `${Math.max(pct, 0.1).toLocaleString("pt-BR", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    })}%`;
+  }
   return `${Math.round(pct)}%`;
 }
 
