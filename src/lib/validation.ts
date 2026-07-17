@@ -21,7 +21,7 @@ export const reservationSchema = z.object({
     .max(100, "Nome muito longo"),
   phone: z
     .string()
-    .refine((p) => normalizePhoneBR(p) !== null, "WhatsApp inválido — use DDD + número"),
+    .refine((p) => normalizePhoneBR(p) !== null, "WhatsApp inválido. Use DDD + número"),
   /** Honeypot anti-bot: humanos nunca preenchem. */
   website: z.string().max(0, "").optional(),
 });

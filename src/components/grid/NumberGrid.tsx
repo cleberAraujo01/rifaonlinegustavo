@@ -158,7 +158,7 @@ export function NumberGrid({ initialGrid }: Props) {
     if (!Number.isNaN(n) && n >= 0 && n <= MAX_N) {
       setBlock(Math.floor(n / 100));
     } else if (value !== "" && !Number.isNaN(n)) {
-      showToast(`O ${value} não existe — os números vão de 000 a ${MAX_N}`);
+      showToast(`O ${value} não existe. Os números vão de 000 a ${MAX_N}`);
     }
   }
 
@@ -365,7 +365,7 @@ export function NumberGrid({ initialGrid }: Props) {
                   : showToast(
                       `O ${formatNumber(n)} já foi escolhido${
                         status === "P" ? " e pago" : ""
-                      } — que tal outro?`,
+                      }. Que tal outro?`,
                     )
               }
               aria-disabled={status !== "D"}
@@ -475,7 +475,7 @@ export function NumberGrid({ initialGrid }: Props) {
                   {selected.length > 1 ? "S" : ""} →
                 </button>
                 <p className="text-center text-xs text-stone-400">
-                  Continue escolhendo na grade — seus números ficam guardados aqui
+                  Continue escolhendo na grade. Seus números ficam guardados aqui
                 </p>
               </>
             )}
@@ -506,7 +506,7 @@ export function NumberGrid({ initialGrid }: Props) {
                 htmlFor="buyer-phone"
                 className="mb-1 block text-xs font-semibold text-stone-600"
               >
-                WhatsApp (com DDD) — usado para confirmar seu pagamento
+                WhatsApp com DDD (usado para confirmar seu pagamento)
               </label>
               <input
                 id="buyer-phone"
@@ -533,7 +533,7 @@ export function NumberGrid({ initialGrid }: Props) {
                   id="buyer-phone-error"
                   className="mt-1 text-xs font-semibold text-red-600"
                 >
-                  Número incompleto — confira o DDD e o celular, ex.: (11) 91234-5678
+                  Número incompleto. Confira o DDD e o celular, ex.: (11) 91234-5678
                 </p>
               )}
             </div>

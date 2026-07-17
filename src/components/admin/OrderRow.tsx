@@ -250,7 +250,7 @@ export function OrderRow({
         }}
         onCancel={() => setConfirmOpen(false)}
       >
-        {numbers.map(formatNumber).join(", ")} · {formatBRL(totalCents)} — use
+        {numbers.map(formatNumber).join(", ")} · {formatBRL(totalCents)}. Use
         depois de conferir o comprovante do Pix.
       </ConfirmDialog>
 

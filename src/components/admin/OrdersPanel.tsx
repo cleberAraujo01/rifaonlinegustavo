@@ -403,7 +403,7 @@ export function OrdersPanel({ orders, siteUrl }: Props) {
         <ul className="max-h-40 space-y-1 overflow-y-auto">
           {selectedOrders.map((o) => (
             <li key={o.orderId} className="text-xs">
-              <strong>{o.buyerName}</strong> —{" "}
+              <strong>{o.buyerName}</strong> ·{" "}
               {o.numbers.map(formatNumber).join(", ")} ·{" "}
               {formatBRL(o.totalCents)}
             </li>
@@ -424,7 +424,7 @@ export function OrdersPanel({ orders, siteUrl }: Props) {
         onCancel={() => setBulkChargeOpen(false)}
       >
         <p className="mb-2 text-xs text-stone-500">
-          Toque em cada nome — a conversa abre com a cobrança pronta, é só
+          Toque em cada nome: a conversa abre com a cobrança pronta, é só
           enviar e voltar aqui.
         </p>
         <ul className="max-h-48 space-y-1.5 overflow-y-auto">

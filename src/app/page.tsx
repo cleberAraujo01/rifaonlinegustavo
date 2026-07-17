@@ -69,7 +69,7 @@ export default async function Home() {
               href="/numeros"
               className="mt-5 block rounded-xl bg-gold-500 px-8 py-3.5 text-center text-base font-extrabold text-grass-950 shadow-lg transition-colors hover:bg-gold-400 active:bg-gold-600 md:inline-block"
             >
-              QUERO AJUDAR — ESCOLHER NÚMEROS →
+              QUERO AJUDAR · ESCOLHER NÚMEROS →
             </Link>
           </div>
 
@@ -297,7 +297,7 @@ export default async function Home() {
                 <Dice5 className="h-5 w-5" aria-hidden /> Sorteio 100% auditável
               </h2>
               <p className="text-sm leading-relaxed text-grass-100">
-                {CAMPAIGN.drawRule} Ninguém controla o resultado — nem a gente.
+                {CAMPAIGN.drawRule} Ninguém controla o resultado, nem a gente.
               </p>
             </div>
           </section>
@@ -325,7 +325,7 @@ export default async function Home() {
       <section className="mx-auto mt-8 max-w-lg px-4 text-center text-sm text-stone-500 md:max-w-5xl md:px-6">
         <p>
           Meta de {formatBRL(CAMPAIGN.goalCents)} para custear a viagem e os
-          testes em Portugal. São {CAMPAIGN.totalNumbers} números — vendendo
+          testes em Portugal. São {CAMPAIGN.totalNumbers} números. Vendendo
           todos, a arrecadação chega a{" "}
           {formatBRL(CAMPAIGN.totalNumbers * CAMPAIGN.pricePerNumberCents)}.
         </p>

@@ -17,7 +17,7 @@ export const CAMPAIGN = {
   drawDate: null as string | null,
   drawRule:
     "O número sorteado será formado pelos 3 últimos dígitos do 1º prêmio da Loteria Federal. " +
-    "Se sair acima de 699, vale o 2º prêmio; se também passar, o 3º — e assim por diante. " +
+    "Se sair acima de 699, vale o 2º prêmio; se também passar, o 3º, e assim por diante. " +
     "Regra clara e sempre com ganhador.",
 
   pixKey: "11975636037",
@@ -97,7 +97,7 @@ export function buildReinviteMessage(buyerName: string): string {
   return (
     `Oi, ${firstName}! Aqui é o ${CAMPAIGN.organizerName}, da rifa solidária do ${CAMPAIGN.childName}. ` +
     `Sua reserva expirou antes do pagamento, mas ainda dá tempo de participar: ` +
-    `escolha seus números de novo em ${CAMPAIGN.siteUrl}/numeros — agora o prazo de pagamento é de ${CAMPAIGN.reservationLabel}. ` +
+    `escolha seus números de novo em ${CAMPAIGN.siteUrl}/numeros (agora o prazo de pagamento é de ${CAMPAIGN.reservationLabel}). ` +
     `Obrigado por apoiar!`
   );
 }
