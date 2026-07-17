@@ -6,7 +6,7 @@ import { getGridStateSafe } from "@/db/queries";
 import { ensureAdminOrRedirect } from "@/lib/session";
 import { logout } from "@/actions/auth";
 import { CAMPAIGN, formatBRL } from "@/lib/config";
-import { OrderCard } from "@/components/admin/OrderCard";
+import { OrdersPanel, type OrderData } from "@/components/admin/OrdersPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -107,61 +107,25 @@ export default async function AdminPage() {
         </div>
       </section>
 
-      {/* Aguardando pagamento */}
-      <section className="mt-6 px-4">
-        <h2 className="mb-3 text-lg font-extrabold text-grass-900">
-          ⏳ Aguardando pagamento ({pending.length})
-        </h2>
-        {pending.length === 0 ? (
-          <p className="rounded-xl bg-white p-4 text-sm text-stone-500 ring-1 ring-grass-100">
-            Nenhuma reserva pendente no momento.
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {pending.map((o) => (
-              <OrderCard
-                key={o.id}
-                orderId={o.id}
-                buyerName={o.buyerName}
-                buyerPhone={o.buyerPhone}
-                numbers={o.nums}
-                totalCents={o.totalCents}
-                createdAtIso={o.createdAt.toISOString()}
-                isPaid={false}
-                siteUrl={siteUrl}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Pagos */}
-      <section className="mt-6 px-4">
-        <h2 className="mb-3 text-lg font-extrabold text-grass-900">
-          ✅ Confirmados ({paid.length})
-        </h2>
-        {paid.length === 0 ? (
-          <p className="rounded-xl bg-white p-4 text-sm text-stone-500 ring-1 ring-grass-100">
-            Nenhum pagamento confirmado ainda.
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {paid.map((o) => (
-              <OrderCard
-                key={o.id}
-                orderId={o.id}
-                buyerName={o.buyerName}
-                buyerPhone={o.buyerPhone}
-                numbers={o.nums}
-                totalCents={o.totalCents}
-                createdAtIso={o.createdAt.toISOString()}
-                isPaid
-                siteUrl={siteUrl}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+      {/* Busca + fila de pendentes + confirmados recolhidos */}
+      <OrdersPanel
+        pending={pending.map(toOrderData)}
+        paid={paid.map(toOrderData)}
+        siteUrl={siteUrl}
+      />
     </main>
   );
+}
+
+function toOrderData(
+  o: Order & { nums: number[] },
+): OrderData {
+  return {
+    orderId: o.id,
+    buyerName: o.buyerName,
+    buyerPhone: o.buyerPhone,
+    numbers: o.nums,
+    totalCents: o.totalCents,
+    createdAtIso: o.createdAt.toISOString(),
+  };
 }

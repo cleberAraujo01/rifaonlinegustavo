@@ -14,6 +14,10 @@ type Props = {
   isPaid: boolean;
   /** Origem pública do site (para montar o link do comprovante). */
   siteUrl: string;
+  /** Idade relativa da reserva (ex.: "há 3 dias"), calculada pelo painel. */
+  ageLabel?: string;
+  /** Reserva parada há dias sem pagamento: destaca o cartão para cobrança. */
+  nudge?: boolean;
 };
 
 export function OrderCard({
@@ -25,6 +29,8 @@ export function OrderCard({
   createdAtIso,
   isPaid,
   siteUrl,
+  ageLabel,
+  nudge = false,
 }: Props) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -47,13 +53,24 @@ export function OrderCard({
   return (
     <div
       className={`rounded-xl bg-white p-4 ring-1 ${
-        isPaid ? "ring-gold-400" : "ring-grass-100"
+        isPaid ? "ring-gold-400" : nudge ? "ring-2 ring-amber-400" : "ring-grass-100"
       } ${pending ? "opacity-50" : ""}`}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="truncate font-bold text-grass-900">{buyerName}</p>
-          <p className="text-xs text-stone-500">{createdLabel}</p>
+          <p className="truncate font-bold text-grass-900">
+            {buyerName}
+            {nudge && (
+              <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-700">
+                ⏰ cobrar?
+              </span>
+            )}
+          </p>
+          {/* suppressHydrationWarning: a idade relativa pode variar segundos entre servidor e cliente */}
+          <p className="text-xs text-stone-500" suppressHydrationWarning>
+            {createdLabel}
+            {ageLabel ? ` · ${ageLabel}` : ""}
+          </p>
         </div>
         <span className="shrink-0 font-extrabold text-grass-800 tabular">
           {formatBRL(totalCents)}
