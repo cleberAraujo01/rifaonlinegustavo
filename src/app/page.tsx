@@ -7,6 +7,7 @@ import {
   Gift,
   Megaphone,
   ShieldCheck,
+  Truck,
 } from "lucide-react";
 import { CAMPAIGN, formatBRL } from "@/lib/config";
 import { CampaignVideo } from "@/components/landing/CampaignVideo";
@@ -112,6 +113,19 @@ export default async function Home() {
                 </p>
                 <p className="text-xl font-extrabold text-gold-800">
                   {CAMPAIGN.prize}
+                </p>
+                {/* Derruba as objeções "moro longe" e "não quero bicicleta" */}
+                <p className="mx-auto mt-2 flex max-w-xs items-start justify-center gap-1.5 text-left text-xs leading-relaxed text-stone-600">
+                  <Truck
+                    className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-700"
+                    aria-hidden
+                  />
+                  <span>
+                    O prêmio será enviado para{" "}
+                    <strong>qualquer estado do Brasil</strong>. Se o ganhador
+                    preferir, também pode optar por receber o{" "}
+                    <strong>valor da premiação via Pix</strong>.
+                  </span>
                 </p>
               </div>
             </div>
