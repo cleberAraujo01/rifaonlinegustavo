@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { MessageCircle, Search } from "lucide-react";
 import { confirmarPagamentos } from "@/actions/admin";
 import { buildChargeMessage, formatBRL, formatNumber } from "@/lib/config";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
@@ -28,10 +29,10 @@ type Props = {
 const NUDGE_AFTER_DAYS = 3;
 
 const CHIPS: Array<{ key: OrderStatus; label: string }> = [
-  { key: "pending", label: "⏳ Pendentes" },
-  { key: "paid", label: "✅ Confirmados" },
-  { key: "expired", label: "⏰ Expirados" },
-  { key: "cancelled", label: "✕ Cancelados" },
+  { key: "pending", label: "Pendentes" },
+  { key: "paid", label: "Confirmados" },
+  { key: "expired", label: "Expirados" },
+  { key: "cancelled", label: "Cancelados" },
 ];
 
 type SortKey = "oldest" | "newest" | "value" | "quota";
@@ -195,17 +196,23 @@ export function OrdersPanel({ orders, siteUrl }: Props) {
     <>
       {/* Busca + filtros: acompanham a rolagem */}
       <div className="sticky top-0 z-10 space-y-2 bg-grass-50/95 px-4 py-3 backdrop-blur">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            resetPaging();
-          }}
-          placeholder="🔍 Buscar por nome, número ou telefone"
-          aria-label="Buscar pedido por nome do comprador, número da rifa ou telefone"
-          className="w-full rounded-xl border border-grass-200 bg-white px-4 py-2.5 text-sm transition-colors focus:border-grass-600 focus:outline-none"
-        />
+        <div className="relative">
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400"
+            aria-hidden
+          />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              resetPaging();
+            }}
+            placeholder="Buscar por nome, número ou telefone"
+            aria-label="Buscar pedido por nome do comprador, número da rifa ou telefone"
+            className="w-full rounded-xl border border-grass-200 bg-white py-2.5 pl-9 pr-4 text-sm transition-colors focus:border-grass-600 focus:outline-none"
+          />
+        </div>
         <div className="flex gap-1 overflow-x-auto pb-0.5" role="tablist">
           {CHIPS.map((c) => (
             <button
@@ -298,7 +305,11 @@ export function OrdersPanel({ orders, siteUrl }: Props) {
                 onClick={() => setBulkChargeOpen(true)}
                 className="rounded-lg bg-whatsapp px-2.5 py-1.5 text-xs font-extrabold hover:bg-whatsapp-dark"
               >
-                💬 Cobrar em massa
+                <MessageCircle
+                  className="mr-1 inline h-3.5 w-3.5"
+                  aria-hidden
+                />
+                Cobrar em massa
               </button>
             </div>
           </div>
@@ -427,7 +438,7 @@ export function OrdersPanel({ orders, siteUrl }: Props) {
                 rel="noopener noreferrer"
                 className="flex items-center justify-between rounded-lg bg-grass-50 px-3 py-2 text-xs font-bold text-grass-800 transition-colors visited:opacity-50 hover:bg-grass-100"
               >
-                <span className="truncate">💬 {o.buyerName}</span>
+                <span className="truncate">{o.buyerName}</span>
                 <span className="tabular shrink-0 text-stone-500">
                   {formatBRL(o.totalCents)}
                 </span>

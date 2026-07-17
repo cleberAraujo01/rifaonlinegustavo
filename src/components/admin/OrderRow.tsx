@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { MessageCircle, Send } from "lucide-react";
 import { cancelarPedido, confirmarPagamento } from "@/actions/admin";
 import {
   buildChargeMessage,
@@ -97,7 +98,7 @@ export function OrderRow({
             {buyerName}
             {nudge && (
               <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">
-                ⏰ cobrar?
+                cobrar?
               </span>
             )}
           </p>
@@ -150,7 +151,7 @@ export function OrderRow({
                 aria-label={`Cobrar ${buyerName} no WhatsApp`}
                 className={`${smallBtn} bg-whatsapp text-white hover:bg-whatsapp-dark`}
               >
-                💬 Cobrar
+                <MessageCircle className="h-3.5 w-3.5" aria-hidden /> Cobrar
               </a>
             </>
           )}
@@ -167,7 +168,7 @@ export function OrderRow({
                 aria-label={`Enviar confirmação de pagamento para ${buyerName} no WhatsApp`}
                 className={`${smallBtn} bg-whatsapp text-white hover:bg-whatsapp-dark`}
               >
-                📤 Confirmação
+                <Send className="h-3.5 w-3.5" aria-hidden /> Confirmação
               </a>
               <a
                 href={`https://wa.me/${buyerPhone}`}
@@ -177,7 +178,7 @@ export function OrderRow({
                 aria-label={`Abrir conversa com ${buyerName} no WhatsApp`}
                 className={`${smallBtn} bg-whatsapp px-2 text-white hover:bg-whatsapp-dark`}
               >
-                💬
+                <MessageCircle className="h-3.5 w-3.5" aria-hidden />
               </a>
             </>
           )}
@@ -193,7 +194,7 @@ export function OrderRow({
               aria-label={`Reconvidar ${buyerName} a reservar de novo no WhatsApp`}
               className={`${smallBtn} bg-whatsapp text-white hover:bg-whatsapp-dark`}
             >
-              💬 Reconvidar
+              <MessageCircle className="h-3.5 w-3.5" aria-hidden /> Reconvidar
             </a>
           )}
 

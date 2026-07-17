@@ -9,7 +9,7 @@ const inter = Inter({
   display: "swap",
 });
 
-const title = `Rifa Solidária do ${CAMPAIGN.childName} ⚽`;
+const title = `Rifa Solidária do ${CAMPAIGN.childName}`;
 const description =
   `Ajude o ${CAMPAIGN.childName} a realizar o sonho de jogar futebol em Portugal. ` +
   `Números a ${formatBRL(CAMPAIGN.pricePerNumberCents)} — prêmio: ${CAMPAIGN.prize}. ` +

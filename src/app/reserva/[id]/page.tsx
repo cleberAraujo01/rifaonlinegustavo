@@ -2,6 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
+  CheckCircle2,
+  Clock,
+  Megaphone,
+  MessageCircle,
+  TicketCheck,
+} from "lucide-react";
+import {
   CAMPAIGN,
   buildReservationMessage,
   buildWhatsAppUrl,
@@ -19,7 +26,7 @@ export const metadata: Metadata = {
   robots: { index: false },
   // Cartão de pré-visualização do link-comprovante enviado no WhatsApp
   openGraph: {
-    title: `Comprovante · Rifa do ${CAMPAIGN.childName} ⚽`,
+    title: `Comprovante · Rifa do ${CAMPAIGN.childName}`,
     description: `Seus números da sorte na rifa solidária do ${CAMPAIGN.childName}. Sorteio pela Loteria Federal.`,
     images: [
       {
@@ -55,7 +62,10 @@ export default async function ReservaPage({
       <header className="py-6 text-center">
         {isPaid ? (
           <>
-            <p className="text-5xl">🎉</p>
+            <CheckCircle2
+              className="mx-auto h-12 w-12 text-grass-600"
+              aria-hidden
+            />
             <h1 className="mt-2 text-2xl font-extrabold text-grass-900">
               Pagamento confirmado!
             </h1>
@@ -65,7 +75,7 @@ export default async function ReservaPage({
           </>
         ) : isExpired ? (
           <>
-            <p className="text-5xl">⏰</p>
+            <Clock className="mx-auto h-12 w-12 text-red-400" aria-hidden />
             <h1 className="mt-2 text-2xl font-extrabold text-red-700">
               Reserva expirada
             </h1>
@@ -75,7 +85,10 @@ export default async function ReservaPage({
           </>
         ) : (
           <>
-            <p className="text-5xl">✅</p>
+            <TicketCheck
+              className="mx-auto h-12 w-12 text-grass-600"
+              aria-hidden
+            />
             <h1 className="mt-2 text-2xl font-extrabold text-grass-900">
               Números reservados!
             </h1>
@@ -108,7 +121,7 @@ export default async function ReservaPage({
           {/* Passo 1: Pix */}
           <section>
             <h2 className="mb-2 font-extrabold text-grass-900">
-              1️⃣ Pague {formatBRL(order.totalCents)} no Pix
+              1. Pague {formatBRL(order.totalCents)} no Pix
             </h2>
             <PixCopyField
               pixKey={CAMPAIGN.pixKey}
@@ -118,7 +131,7 @@ export default async function ReservaPage({
               Favorecido: {CAMPAIGN.organizerName}
             </p>
             <p className="mt-2 rounded-lg bg-gold-100 px-3 py-2 text-xs text-gold-700">
-              🛡️ Se a rifa não for totalmente vendida até a data do sorteio,
+              Se a rifa não for totalmente vendida até a data do sorteio,
               você recebe <strong>100% do valor de volta</strong> via Pix.
             </p>
           </section>
@@ -126,7 +139,7 @@ export default async function ReservaPage({
           {/* Passo 2: comprovante */}
           <section>
             <h2 className="mb-2 font-extrabold text-grass-900">
-              2️⃣ Envie o comprovante no WhatsApp
+              2. Envie o comprovante no WhatsApp
             </h2>
             <a
               href={buildWhatsAppUrl(
@@ -134,13 +147,14 @@ export default async function ReservaPage({
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-xl bg-whatsapp py-4 text-center text-base font-extrabold text-white active:bg-whatsapp-dark"
+              className="flex items-center justify-center gap-2 rounded-xl bg-whatsapp py-4 text-center text-base font-extrabold text-white active:bg-whatsapp-dark"
             >
-              💬 ENVIAR COMPROVANTE
+              <MessageCircle className="h-5 w-5" aria-hidden /> ENVIAR
+              COMPROVANTE
             </a>
             <p className="mt-2 text-center text-xs text-stone-500">
               A mensagem já vai pronta com seus números. Após a confirmação,
-              seus números ficam 🟡 dourados na grade.
+              seus números ficam dourados na grade.
             </p>
           </section>
         </div>
@@ -166,9 +180,7 @@ export default async function ReservaPage({
           rel="noopener noreferrer"
           className="mt-8 flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-grass-100 transition-colors hover:bg-grass-50 active:bg-grass-100"
         >
-          <span className="text-2xl" aria-hidden>
-            📢
-          </span>
+          <Megaphone className="h-6 w-6 shrink-0 text-whatsapp" aria-hidden />
           <span className="flex-1">
             <span className="block text-sm font-extrabold text-grass-900">
               Entre no grupo da rifa no WhatsApp

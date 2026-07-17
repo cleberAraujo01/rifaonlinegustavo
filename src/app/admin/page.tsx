@@ -6,6 +6,7 @@ import { getGridStateSafe } from "@/db/queries";
 import { ensureAdminOrRedirect } from "@/lib/session";
 import { logout } from "@/actions/auth";
 import { CAMPAIGN, formatBRL } from "@/lib/config";
+import { formatPct } from "@/components/landing/StickyHeader";
 import { OrdersPanel, type OrderData } from "@/components/admin/OrdersPanel";
 
 export const dynamic = "force-dynamic";
@@ -88,7 +89,7 @@ export default async function AdminPage() {
   return (
     <main className="mx-auto w-full max-w-lg flex-1 pb-10 md:max-w-3xl">
       <header className="flex items-center justify-between bg-grass-900 px-4 py-3 text-white">
-        <h1 className="text-base font-extrabold">⚽ Painel da rifa</h1>
+        <h1 className="text-base font-extrabold">Painel da rifa</h1>
         <form action={logout}>
           <button type="submit" className="text-sm text-grass-100 underline">
             sair
@@ -102,7 +103,7 @@ export default async function AdminPage() {
           <p className="text-2xl font-extrabold text-grass-800 tabular">
             {formatBRL(stats.raisedCents)}{" "}
             <span className="text-sm font-semibold text-stone-500">
-              / {formatBRL(CAMPAIGN.goalCents)} ({Math.round(confirmedPct)}%)
+              / {formatBRL(CAMPAIGN.goalCents)} ({formatPct(confirmedPct)})
             </span>
           </p>
           {/* Barra em dois segmentos: confirmado (verde→ouro) + aguardando (âmbar) */}
@@ -114,24 +115,29 @@ export default async function AdminPage() {
             aria-valuemax={100}
             aria-label={`Arrecadação confirmada: ${formatBRL(stats.raisedCents)}; aguardando pagamento: ${formatBRL(pendingCents)}`}
           >
+            {/* Larguras mínimas: qualquer valor > 0 já pinta um traço visível */}
             <div
               className="h-full bg-gradient-to-r from-grass-600 to-gold-500"
-              style={{ width: `${confirmedPct}%` }}
+              style={{
+                width: `${confirmedPct > 0 ? Math.max(confirmedPct, 1.5) : 0}%`,
+              }}
             />
             <div
               className="h-full bg-amber-300"
-              style={{ width: `${pendingPct}%` }}
+              style={{
+                width: `${pendingPct > 0 ? Math.max(pendingPct, 1.5) : 0}%`,
+              }}
             />
           </div>
           <p className="mt-2 text-sm text-stone-600">
-            ✅ {formatBRL(stats.raisedCents)} confirmados
+            {formatBRL(stats.raisedCents)} confirmados
             {pendingCents > 0 && (
-              <> · ⏳ {formatBRL(pendingCents)} aguardando Pix</>
+              <> · {formatBRL(pendingCents)} aguardando Pix</>
             )}
           </p>
           <p className="mt-1 text-sm text-stone-600 tabular">
-            🎟️ {stats.paidCount} de {CAMPAIGN.totalNumbers} cotas vendidas · 🔒{" "}
-            {stats.reservedCount} reservadas · ⬜ {freeCount} livres
+            {stats.paidCount} de {CAMPAIGN.totalNumbers} cotas vendidas ·{" "}
+            {stats.reservedCount} reservadas · {freeCount} livres
           </p>
         </div>
       </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check, Copy } from "lucide-react";
 
 type Props = { pixKey: string; pixKeyType: string };
 
@@ -28,11 +29,19 @@ export function PixCopyField({ pixKey, pixKeyType }: Props) {
       <button
         type="button"
         onClick={copy}
-        className={`shrink-0 rounded-xl px-4 py-3 text-sm font-extrabold text-white ${
+        className={`flex shrink-0 items-center gap-1.5 rounded-xl px-4 py-3 text-sm font-extrabold text-white ${
           copied ? "bg-grass-800" : "bg-grass-600 active:bg-grass-700"
         }`}
       >
-        {copied ? "✓ Copiado!" : "📋 Copiar"}
+        {copied ? (
+          <>
+            <Check className="h-4 w-4" aria-hidden /> Copiado!
+          </>
+        ) : (
+          <>
+            <Copy className="h-4 w-4" aria-hidden /> Copiar
+          </>
+        )}
       </button>
     </div>
   );

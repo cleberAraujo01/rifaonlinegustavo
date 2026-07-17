@@ -1,6 +1,13 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
+import {
+  CalendarDays,
+  Dice5,
+  Gift,
+  Megaphone,
+  ShieldCheck,
+} from "lucide-react";
 import { CAMPAIGN, formatBRL } from "@/lib/config";
 import { CampaignVideo } from "@/components/landing/CampaignVideo";
 import { ProgressBar } from "@/components/landing/ProgressBar";
@@ -13,10 +20,10 @@ import { getGridStateSafe } from "@/db/queries";
 export const revalidate = 60;
 
 const steps = [
-  { emoji: "1️⃣", title: "Escolha seus números", text: `Na grade de 000 a ${CAMPAIGN.totalNumbers - 1}, quantos quiser.` },
-  { emoji: "2️⃣", title: "Reserve com nome e WhatsApp", text: "Sem cadastro, sem senha. Leva 30 segundos." },
-  { emoji: "3️⃣", title: "Pague pelo Pix", text: `${formatBRL(CAMPAIGN.pricePerNumberCents)} por número, na chave exibida na tela.` },
-  { emoji: "4️⃣", title: "Envie o comprovante", text: "Direto no WhatsApp, com mensagem já pronta. Confirmado = número garantido." },
+  { n: 1, title: "Escolha seus números", text: `Na grade de 000 a ${CAMPAIGN.totalNumbers - 1}, quantos quiser.` },
+  { n: 2, title: "Reserve com nome e WhatsApp", text: "Sem cadastro, sem senha. Leva 30 segundos." },
+  { n: 3, title: "Pague pelo Pix", text: `${formatBRL(CAMPAIGN.pricePerNumberCents)} por número, na chave exibida na tela.` },
+  { n: 4, title: "Envie o comprovante", text: "Direto no WhatsApp, com mensagem já pronta. Confirmado = número garantido." },
 ];
 
 // Vídeos opcionais: os arquivos que existirem em public/videos/ aparecem na
@@ -36,10 +43,7 @@ export default async function Home() {
     ? new Date(CAMPAIGN.drawDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })
     : "em breve";
 
-  const goalPct = Math.min(
-    100,
-    Math.round((stats.raisedCents / CAMPAIGN.goalCents) * 100),
-  );
+  const goalPct = Math.min(100, (stats.raisedCents / CAMPAIGN.goalCents) * 100);
 
   return (
     <main className="flex-1 pb-24">
@@ -50,7 +54,7 @@ export default async function Home() {
         <div className="mx-auto w-full max-w-lg md:grid md:max-w-5xl md:grid-cols-2 md:items-center md:gap-10">
           <div className="text-center md:text-left">
             <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-gold-400">
-              Rifa solidária ⚽
+              Rifa solidária
             </p>
             <h1 className="text-3xl font-extrabold leading-tight md:text-4xl">
               Ajude o {CAMPAIGN.childName} a jogar futebol em Portugal
@@ -77,11 +81,7 @@ export default async function Home() {
               imgClassName="object-center"
               priority
               sizes="(max-width: 768px) 100vw, 480px"
-              fallback={
-                <div className="flex h-full items-center justify-center bg-grass-800 text-6xl">
-                  ⚽
-                </div>
-              }
+              fallback={<div className="h-full bg-grass-800" />}
             />
             {/* Gradiente para legibilidade de texto sobre a foto */}
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent" />
@@ -107,8 +107,8 @@ export default async function Home() {
                 sizes="(max-width: 768px) 100vw, 400px"
               />
               <div className="mt-3 text-center">
-                <p className="text-xs font-bold uppercase tracking-widest text-gold-800">
-                  Prêmio 🚴
+                <p className="flex items-center justify-center gap-1 text-xs font-bold uppercase tracking-widest text-gold-800">
+                  <Gift className="h-3.5 w-3.5" aria-hidden /> Prêmio
                 </p>
                 <p className="text-xl font-extrabold text-gold-800">
                   {CAMPAIGN.prize}
@@ -125,7 +125,10 @@ export default async function Home() {
               </div>
               {/* Selo de confiança do sorteio */}
               <div className="flex flex-col justify-center rounded-xl bg-grass-50 p-3">
-                <p className="text-xs text-stone-500">📅 Sorteio {drawDateLabel}</p>
+                <p className="flex items-center justify-center gap-1 text-xs text-stone-500">
+                  <CalendarDays className="h-3.5 w-3.5" aria-hidden /> Sorteio{" "}
+                  {drawDateLabel}
+                </p>
                 <p className="text-sm font-extrabold text-grass-800">
                   Loteria Federal
                 </p>
@@ -147,9 +150,7 @@ export default async function Home() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-grass-100 transition-colors hover:bg-grass-50 active:bg-grass-100"
               >
-                <span className="text-2xl" aria-hidden>
-                  📢
-                </span>
+                <Megaphone className="h-6 w-6 shrink-0 text-whatsapp" aria-hidden />
                 <span className="flex-1">
                   <span className="block text-sm font-extrabold text-grass-900">
                     Acompanhe a campanha no WhatsApp
@@ -172,7 +173,7 @@ export default async function Home() {
           {/* Conheça o Gustavo */}
           <section className="mt-8">
             <h2 className="mb-4 text-xl font-extrabold text-grass-900">
-              ⚽ Ajude um sonho a cruzar o oceano!
+              Ajude um sonho a cruzar o oceano!
             </h2>
 
             {videos.length > 0 && (
@@ -225,7 +226,7 @@ export default async function Home() {
                   hospedagem, alimentação e demais custos da viagem.
                 </p>
                 <p className="font-bold text-grass-900">
-                  🎁 E tem um super prêmio para você!
+                  E tem um super prêmio para você!
                 </p>
                 <p>
                   Ao adquirir um número, além de contribuir para a realização
@@ -233,7 +234,7 @@ export default async function Home() {
                   <strong>{CAMPAIGN.prize.toLowerCase()}</strong>.
                 </p>
                 <p>
-                  💚 Cada número vendido representa mais um passo para que esse
+                  Cada número vendido representa mais um passo para que esse
                   sonho saia do papel e se torne realidade.
                 </p>
                 <p>
@@ -246,7 +247,7 @@ export default async function Home() {
                 <p>
                   Muito obrigado por acreditar no talento, na dedicação e no
                   futuro do nosso filho. Que Deus abençoe grandemente cada
-                  pessoa que contribuir com essa caminhada! 🙏
+                  pessoa que contribuir com essa caminhada!
                 </p>
               </div>
             </div>
@@ -263,7 +264,9 @@ export default async function Home() {
                   key={s.title}
                   className="flex gap-3 rounded-xl bg-white p-4 ring-1 ring-grass-100"
                 >
-                  <span className="text-2xl">{s.emoji}</span>
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-grass-100 text-sm font-extrabold text-grass-800">
+                    {s.n}
+                  </span>
                   <div>
                     <p className="font-bold text-grass-900">{s.title}</p>
                     <p className="text-sm text-stone-600">{s.text}</p>
@@ -276,8 +279,8 @@ export default async function Home() {
           {/* Regra do sorteio */}
           <section className="mt-8">
             <div className="rounded-2xl bg-grass-900 p-5 text-white">
-              <h2 className="mb-2 text-lg font-extrabold text-gold-400">
-                🎲 Sorteio 100% auditável
+              <h2 className="mb-2 flex items-center gap-2 text-lg font-extrabold text-gold-400">
+                <Dice5 className="h-5 w-5" aria-hidden /> Sorteio 100% auditável
               </h2>
               <p className="text-sm leading-relaxed text-grass-100">
                 {CAMPAIGN.drawRule} Ninguém controla o resultado — nem a gente.
@@ -288,8 +291,9 @@ export default async function Home() {
           {/* Garantia de devolução */}
           <section className="mt-4">
             <div className="rounded-2xl border-2 border-gold-400 bg-white p-5">
-              <h2 className="mb-2 text-lg font-extrabold text-grass-900">
-                🛡️ Garantia de devolução
+              <h2 className="mb-2 flex items-center gap-2 text-lg font-extrabold text-grass-900">
+                <ShieldCheck className="h-5 w-5 text-gold-600" aria-hidden />{" "}
+                Garantia de devolução
               </h2>
               <p className="text-sm leading-relaxed text-stone-700">
                 Se a rifa não for vendida por completo até a data do sorteio,{" "}

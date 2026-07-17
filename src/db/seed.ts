@@ -30,11 +30,11 @@ async function main() {
   }
 
   console.log(
-    `✅ Seed concluído: números 000–${CAMPAIGN.totalNumbers - 1} criados (ou já existiam).`,
+    `Seed concluído: números 000–${CAMPAIGN.totalNumbers - 1} criados (ou já existiam).`,
   );
 }
 
 main().catch((err) => {
-  console.error("❌ Erro no seed:", err);
+  console.error("Erro no seed:", err);
   process.exit(1);
 });

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Dice5, Search } from "lucide-react";
 import { CAMPAIGN, formatBRL, formatNumber } from "@/lib/config";
 import { maskPhoneBR, normalizePhoneBR } from "@/lib/phone";
 import { reservarNumeros } from "@/actions/reservar";
@@ -139,8 +140,8 @@ export function NumberGrid({ initialGrid }: Props) {
       // piscando no painel confirmam que a ação funcionou.
       showToast(
         picked.length === 1
-          ? "🎲 1 número adicionado à sua seleção!"
-          : `🎲 ${picked.length} números adicionados à sua seleção!` +
+          ? "1 número adicionado à sua seleção!"
+          : `${picked.length} números adicionados à sua seleção!` +
               (picked.length < count ? ` (limite de ${CAMPAIGN.maxNumbersPerOrder})` : ""),
       );
       flashChips(picked);
@@ -157,7 +158,7 @@ export function NumberGrid({ initialGrid }: Props) {
     if (!Number.isNaN(n) && n >= 0 && n <= MAX_N) {
       setBlock(Math.floor(n / 100));
     } else if (value !== "" && !Number.isNaN(n)) {
-      showToast(`O ${value} não existe — os números vão de 000 a ${MAX_N} 😉`);
+      showToast(`O ${value} não existe — os números vão de 000 a ${MAX_N}`);
     }
   }
 
@@ -216,21 +217,27 @@ export function NumberGrid({ initialGrid }: Props) {
       {/* Busca + aleatórios */}
       <div className="sticky top-0 z-10 space-y-2 border-b border-grass-100 bg-grass-50/95 px-4 py-3 backdrop-blur">
         <div className="flex gap-2">
-          <input
-            type="tel"
-            inputMode="numeric"
-            maxLength={3}
-            placeholder="🔍 Buscar nº"
-            value={search}
-            onChange={(e) => goToSearch(e.target.value.replace(/\D/g, ""))}
-            aria-invalid={searchInvalid}
-            aria-label={`Buscar número de 000 a ${MAX_N}`}
-            className={`w-28 rounded-xl border bg-white px-3 py-2 text-sm tabular transition-colors focus:outline-none ${
-              searchInvalid
-                ? "border-red-400 focus:border-red-500"
-                : "border-grass-200 focus:border-grass-600"
-            }`}
-          />
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-stone-400"
+              aria-hidden
+            />
+            <input
+              type="tel"
+              inputMode="numeric"
+              maxLength={3}
+              placeholder="Buscar nº"
+              value={search}
+              onChange={(e) => goToSearch(e.target.value.replace(/\D/g, ""))}
+              aria-invalid={searchInvalid}
+              aria-label={`Buscar número de 000 a ${MAX_N}`}
+              className={`w-28 rounded-xl border bg-white py-2 pl-8 pr-3 text-sm tabular transition-colors focus:outline-none ${
+                searchInvalid
+                  ? "border-red-400 focus:border-red-500"
+                  : "border-grass-200 focus:border-grass-600"
+              }`}
+            />
+          </div>
           <div className="flex flex-1 gap-1">
             {[1, 5, 10].map((c) => (
               <button
@@ -239,15 +246,15 @@ export function NumberGrid({ initialGrid }: Props) {
                 onClick={() => pickRandom(c)}
                 title={`Adicionar ${c} número${c > 1 ? "s" : ""} aleatório${c > 1 ? "s" : ""} à sua seleção`}
                 aria-label={`Adicionar ${c} número${c > 1 ? "s" : ""} aleatório${c > 1 ? "s" : ""} à sua seleção`}
-                className="flex-1 rounded-xl bg-white px-2 py-2 text-sm font-bold text-grass-700 ring-1 ring-grass-200 transition-colors hover:bg-grass-50 active:bg-grass-100"
+                className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-white px-2 py-2 text-sm font-bold text-grass-700 ring-1 ring-grass-200 transition-colors hover:bg-grass-50 active:bg-grass-100"
               >
-                🎲 +{c}
+                <Dice5 className="h-4 w-4" aria-hidden /> +{c}
               </button>
             ))}
           </div>
         </div>
         <p className="text-center text-[11px] text-stone-500">
-          🎲 adiciona números aleatórios à sua seleção
+          +1 / +5 / +10 adicionam números aleatórios à sua seleção
         </p>
 
         {/* Navegação por blocos de 100: setas + sombras nas bordas deixam
@@ -305,10 +312,7 @@ export function NumberGrid({ initialGrid }: Props) {
           livre
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="flex h-4 w-4 items-center justify-center rounded-md bg-stone-200 text-[9px]">
-            🔒
-          </span>{" "}
-          reservado
+          <span className="h-4 w-4 rounded-md bg-stone-200" /> reservado
         </span>
         <span className="flex items-center gap-1.5">
           <span className="flex h-4 w-4 items-center justify-center rounded-md bg-gold-400 text-[9px] font-bold text-gold-900">
@@ -361,7 +365,7 @@ export function NumberGrid({ initialGrid }: Props) {
                   : showToast(
                       `O ${formatNumber(n)} já foi escolhido${
                         status === "P" ? " e pago" : ""
-                      } — que tal outro? 😉`,
+                      } — que tal outro?`,
                     )
               }
               aria-disabled={status !== "D"}
@@ -378,7 +382,7 @@ export function NumberGrid({ initialGrid }: Props) {
                       : "bg-white text-grass-800 ring-1 ring-grass-200 hover:bg-grass-50 active:scale-95 active:bg-grass-100"
               } ${isSearched ? "ring-4 ring-gold-500" : ""}`}
             >
-              {status === "P" ? "✓" : status === "R" ? "🔒" : formatNumber(n)}
+              {status === "P" ? "✓" : formatNumber(n)}
             </button>
           );
         })}

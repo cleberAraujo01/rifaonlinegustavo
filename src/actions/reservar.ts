@@ -132,7 +132,7 @@ export async function reservarNumeros(input: {
       return {
         ok: false,
         error: "NUMBERS_TAKEN",
-        message: "Alguém acabou de reservar parte desses números. Escolha outros 🙏",
+        message: "Alguém acabou de reservar parte desses números. Escolha outros, por favor.",
         takenNumbers: err.taken,
       };
     }
