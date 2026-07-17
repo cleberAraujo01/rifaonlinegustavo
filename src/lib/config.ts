@@ -68,6 +68,38 @@ export function buildReservationMessage(
 }
 
 /**
+ * Cobrança gentil de uma reserva pendente (usada no botão "Cobrar" e na
+ * cobrança em massa do painel). Sem emojis — ver aviso abaixo.
+ */
+export function buildChargeMessage(
+  numbers: number[],
+  buyerName: string,
+): string {
+  const firstName = buyerName.trim().split(/\s+/)[0];
+  const plural = numbers.length > 1;
+  const nums = numbers.map(formatNumber).join(", ");
+  const total = formatBRL(numbers.length * CAMPAIGN.pricePerNumberCents);
+  return (
+    `Oi, ${firstName}! Tudo bem? Aqui é o ${CAMPAIGN.organizerName}, da rifa solidária do ${CAMPAIGN.childName}.\n\n` +
+    `Seu${plural ? "s" : ""} número${plural ? "s" : ""} *${nums}* continua${plural ? "m" : ""} guardado${plural ? "s" : ""} para você, ` +
+    `mas ainda não recebi o Pix (${total}).\n\n` +
+    `Chave Pix (${CAMPAIGN.pixKeyType}): ${CAMPAIGN.pixKey}\n\n` +
+    `Depois é só me mandar o comprovante por aqui. Qualquer dúvida, me chama! Obrigado por apoiar.`
+  );
+}
+
+/** Reconvite para quem deixou a reserva expirar sem pagar. Sem emojis. */
+export function buildReinviteMessage(buyerName: string): string {
+  const firstName = buyerName.trim().split(/\s+/)[0];
+  return (
+    `Oi, ${firstName}! Aqui é o ${CAMPAIGN.organizerName}, da rifa solidária do ${CAMPAIGN.childName}. ` +
+    `Sua reserva expirou antes do pagamento, mas ainda dá tempo de participar: ` +
+    `escolha seus números de novo em ${CAMPAIGN.siteUrl}/numeros — agora o prazo de pagamento é de ${CAMPAIGN.reservationLabel}. ` +
+    `Obrigado por apoiar!`
+  );
+}
+
+/**
  * Mensagem de agradecimento que o organizador envia ao comprador após
  * confirmar o pagamento no painel. O link do pedido serve de comprovante
  * permanente (auditável) com os números dourados na tela.

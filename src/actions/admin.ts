@@ -40,6 +40,28 @@ export async function confirmarPagamento(
   }
 }
 
+/**
+ * Confirma vários pedidos de uma vez (ação em massa do painel).
+ * Cada pedido roda na própria transação: um falhar não desfaz os demais.
+ */
+export async function confirmarPagamentos(
+  orderIds: string[],
+): Promise<AdminActionResult> {
+  await requireAdmin();
+  const failed: string[] = [];
+  for (const id of orderIds) {
+    const result = await confirmarPagamento(id);
+    if (!result.ok) failed.push(id);
+  }
+  if (failed.length > 0) {
+    return {
+      ok: false,
+      message: `${orderIds.length - failed.length} confirmados; ${failed.length} falharam (talvez já não estivessem reservados).`,
+    };
+  }
+  return { ok: true };
+}
+
 /** Cancela um pedido e devolve os números para a grade. */
 export async function cancelarPedido(
   orderId: string,
