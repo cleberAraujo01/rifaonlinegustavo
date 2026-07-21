@@ -10,15 +10,43 @@ export const CAMPAIGN = {
   pricePerNumberCents: 4000, // R$ 40,00
   goalCents: 2500000, // R$ 25.000,00 (vendendo 625 números; venda total = R$ 28.000)
 
+  // 1º prêmio, usado nos textos gerais e na imagem do cartão
   prize: "Bicicleta elétrica 0 km",
   prizeValueLabel: "R$ 4.500",
 
-  // TODO: definir a data real do sorteio (formato ISO). Enquanto null, a UI mostra "em breve".
-  drawDate: null as string | null,
+  // Os três prêmios saem da MESMA extração da Loteria Federal, que sorteia
+  // 5 bilhetes no mesmo dia. Cada prêmio da rifa usa os 3 últimos dígitos
+  // do prêmio correspondente da Loteria Federal.
+  prizes: [
+    {
+      label: "1º prêmio",
+      title: "Bicicleta elétrica 0 km",
+      short: "bicicleta",
+      source: "3 últimos dígitos do 1º prêmio da Loteria Federal",
+    },
+    {
+      label: "2º prêmio",
+      title: "R$ 1.000,00 via Pix",
+      short: "R$ 1.000",
+      source: "3 últimos dígitos do 2º prêmio da Loteria Federal",
+    },
+    {
+      label: "3º prêmio",
+      title: "R$ 500,00 via Pix",
+      short: "R$ 500",
+      source: "3 últimos dígitos do 3º prêmio da Loteria Federal",
+    },
+  ],
+
+  drawDate: "2026-11-07" as string | null,
+  drawDateLabel: "07/11/2026",
+  drawLotteryLabel: "2º sorteio da Loteria Federal de novembro",
   drawRule:
-    "O número sorteado será formado pelos 3 últimos dígitos do 1º prêmio da Loteria Federal. " +
-    "Se sair acima de 699, vale o 2º prêmio; se também passar, o 3º, e assim por diante. " +
-    "Regra clara e sempre com ganhador.",
+    "Os três prêmios são definidos na mesma extração da Loteria Federal, que sorteia 5 bilhetes no mesmo dia. " +
+    "O número ganhador de cada prêmio é formado pelos 3 últimos dígitos:",
+  drawRuleAdjust:
+    "Se algum número sair acima de 699 (fora da faixa 000 a 699), usa-se o próximo prêmio da Loteria Federal (o 4º e depois o 5º), sempre garantindo um ganhador. " +
+    "Se o mesmo número se repetir entre os prêmios, passa-se ao próximo prêmio da Loteria Federal para desempatar, garantindo três ganhadores diferentes.",
 
   pixKey: "11975636037",
   pixKeyType: "Telefone",

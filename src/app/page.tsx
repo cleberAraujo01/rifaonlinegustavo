@@ -2,11 +2,13 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import Link from "next/link";
 import {
+  Banknote,
   CalendarDays,
   Dice5,
   Gift,
   Megaphone,
   ShieldCheck,
+  Trophy,
   Truck,
 } from "lucide-react";
 import { CAMPAIGN, formatBRL } from "@/lib/config";
@@ -40,9 +42,7 @@ export default async function Home() {
   const videoPoster = existsSync(join(process.cwd(), "public", VIDEO_POSTER))
     ? VIDEO_POSTER
     : undefined;
-  const drawDateLabel = CAMPAIGN.drawDate
-    ? new Date(CAMPAIGN.drawDate).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })
-    : "em breve";
+  const drawDateLabel = CAMPAIGN.drawDate ? CAMPAIGN.drawDateLabel : "em breve";
 
   const goalPct = Math.min(100, (stats.raisedCents / CAMPAIGN.goalCents) * 100);
 
@@ -96,12 +96,16 @@ export default async function Home() {
         {/* Coluna de conversão */}
         {/* top-16 = folga para o cabeçalho sticky não cobrir os cartões */}
         <div className="-mt-5 space-y-4 md:sticky md:top-16 md:order-2 md:col-span-2 md:mt-8">
-          {/* Cartão do prêmio: largura total, imagem grande e legenda destacada */}
+          {/* Cartão dos prêmios: 1º em destaque com imagem, 2º e 3º logo abaixo */}
           <section className="rounded-2xl bg-white p-4 shadow-md ring-1 ring-grass-100">
+            <p className="mb-3 flex items-center justify-center gap-1.5 rounded-xl bg-grass-900 px-3 py-2 text-sm font-extrabold uppercase tracking-widest text-gold-400">
+              <Trophy className="h-4 w-4" aria-hidden /> 3 chances de ganhar
+            </p>
+
             <div className="rounded-xl bg-gold-100/70 p-3">
               <SmartImage
                 src="/images/bike.png"
-                alt={`Prêmio da rifa: ${CAMPAIGN.prize} (imagem ilustrativa)`}
+                alt={`1º prêmio da rifa: ${CAMPAIGN.prize} (imagem ilustrativa)`}
                 className="h-[260px] w-full rounded-lg bg-white"
                 fit="contain"
                 badge="imagem ilustrativa"
@@ -109,10 +113,13 @@ export default async function Home() {
               />
               <div className="mt-3 text-center">
                 <p className="flex items-center justify-center gap-1 text-xs font-bold uppercase tracking-widest text-gold-800">
-                  <Gift className="h-3.5 w-3.5" aria-hidden /> Prêmio
+                  <Gift className="h-3.5 w-3.5" aria-hidden /> 1º prêmio
                 </p>
                 <p className="text-xl font-extrabold text-gold-800">
                   {CAMPAIGN.prize}
+                </p>
+                <p className="text-sm font-semibold text-gold-800">
+                  ou o valor via Pix, à escolha do ganhador
                 </p>
                 {/* Derruba as objeções "moro longe" e "não quero bicicleta" */}
                 <p className="mx-auto mt-2 flex max-w-xs items-start justify-center gap-1.5 text-left text-xs leading-relaxed text-stone-600">
@@ -121,13 +128,33 @@ export default async function Home() {
                     aria-hidden
                   />
                   <span>
-                    O prêmio será enviado para{" "}
-                    <strong>qualquer estado do Brasil</strong>. Se o ganhador
-                    preferir, também pode optar por receber o{" "}
-                    <strong>valor da premiação via Pix</strong>.
+                    A bicicleta será enviada para{" "}
+                    <strong>qualquer estado do Brasil</strong>, sem custo para o
+                    ganhador.
                   </span>
                 </p>
               </div>
+            </div>
+
+            {/* 2º e 3º prêmios: pagos via Pix, direto na conta do ganhador */}
+            <div className="mt-3 space-y-2">
+              {CAMPAIGN.prizes.slice(1).map((p) => (
+                <div
+                  key={p.label}
+                  className="flex items-center gap-3 rounded-xl bg-grass-50 p-3"
+                >
+                  <Banknote
+                    className="h-6 w-6 shrink-0 text-grass-700"
+                    aria-hidden
+                  />
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-widest text-stone-500">
+                      {p.label}
+                    </p>
+                    <p className="font-extrabold text-grass-800">{p.title}</p>
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div className="mt-3 grid grid-cols-2 items-stretch gap-3 text-center">
@@ -148,6 +175,11 @@ export default async function Home() {
                 </p>
               </div>
             </div>
+            {CAMPAIGN.drawDate && (
+              <p className="mt-2 text-center text-[11px] text-stone-500">
+                {CAMPAIGN.drawLotteryLabel}
+              </p>
+            )}
           </section>
 
           {/* Progresso da meta */}
@@ -240,12 +272,16 @@ export default async function Home() {
                   hospedagem, alimentação e demais custos da viagem.
                 </p>
                 <p className="font-bold text-grass-900">
-                  E tem um super prêmio para você!
+                  E tem três prêmios para você!
                 </p>
                 <p>
                   Ao adquirir um número, além de contribuir para a realização
                   desse sonho, você concorre a uma{" "}
-                  <strong>{CAMPAIGN.prize.toLowerCase()}</strong>.
+                  <strong>{CAMPAIGN.prize.toLowerCase()}</strong> (ou o valor
+                  via Pix, à escolha do ganhador), a{" "}
+                  <strong>R$ 1.000,00 via Pix</strong> e a{" "}
+                  <strong>R$ 500,00 via Pix</strong>. São três chances de ganhar
+                  com o mesmo número!
                 </p>
                 <p>
                   Cada número vendido representa mais um passo para que esse
@@ -297,7 +333,21 @@ export default async function Home() {
                 <Dice5 className="h-5 w-5" aria-hidden /> Sorteio 100% auditável
               </h2>
               <p className="text-sm leading-relaxed text-grass-100">
-                {CAMPAIGN.drawRule} Ninguém controla o resultado, nem a gente.
+                Sorteio no dia <strong>{CAMPAIGN.drawDateLabel}</strong> (
+                {CAMPAIGN.drawLotteryLabel}), pela Loteria Federal.{" "}
+                {CAMPAIGN.drawRule}
+              </p>
+              <ul className="mt-3 space-y-1.5 text-sm leading-relaxed text-grass-100">
+                {CAMPAIGN.prizes.map((p) => (
+                  <li key={p.label}>
+                    <strong className="text-gold-400">{p.label}</strong> (
+                    {p.short}): {p.source}.
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 text-sm leading-relaxed text-grass-100">
+                {CAMPAIGN.drawRuleAdjust} Ninguém controla o resultado, nem a
+                gente.
               </p>
             </div>
           </section>

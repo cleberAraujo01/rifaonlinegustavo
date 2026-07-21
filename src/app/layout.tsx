@@ -12,8 +12,8 @@ const inter = Inter({
 const title = `Rifa Solidária do ${CAMPAIGN.childName}`;
 const description =
   `Ajude o ${CAMPAIGN.childName} a realizar o sonho de jogar futebol em Portugal. ` +
-  `Números a ${formatBRL(CAMPAIGN.pricePerNumberCents)} · prêmio: ${CAMPAIGN.prize}. ` +
-  `Sorteio pela Loteria Federal.`;
+  `Números a ${formatBRL(CAMPAIGN.pricePerNumberCents)} · 3 prêmios: ${CAMPAIGN.prize}, R$ 1.000 e R$ 500 via Pix. ` +
+  `Sorteio em ${CAMPAIGN.drawDateLabel} pela Loteria Federal.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(
