@@ -111,11 +111,16 @@ export function buildChargeMessage(
   const nums = numbers.map(formatNumber).join(", ");
   const total = formatBRL(numbers.length * CAMPAIGN.pricePerNumberCents);
   return (
-    `Oi, ${firstName}! Tudo bem? Aqui é o ${CAMPAIGN.organizerName}, da rifa solidária do ${CAMPAIGN.childName}.\n\n` +
-    `Seu${plural ? "s" : ""} número${plural ? "s" : ""} *${nums}* continua${plural ? "m" : ""} guardado${plural ? "s" : ""} para você, ` +
-    `mas ainda não recebi o Pix (${total}).\n\n` +
-    `Chave Pix (${CAMPAIGN.pixKeyType}): ${CAMPAIGN.pixKey}\n\n` +
-    `Depois é só me mandar o comprovante por aqui. Qualquer dúvida, me chama! Obrigado por apoiar.`
+    `Olá, ${firstName}, tudo bem? ${CAMPAIGN.organizerName} por aqui, da rifa do ${CAMPAIGN.childName}!\n\n` +
+    `Tô passando rapidinho para te lembrar do${plural ? "s" : ""} número${plural ? "s" : ""} *${nums}*, ` +
+    `que segue${plural ? "m" : ""} reservado${plural ? "s" : ""} para você. ` +
+    `Como as reservas sem pagamento são liberadas depois de um tempo para manter tudo organizado, ` +
+    `quis te avisar antes para você não perder o${plural ? "s" : ""} seu${plural ? "s" : ""}!\n\n` +
+    `*Valor:* ${total}\n` +
+    `*Chave Pix (${CAMPAIGN.pixKeyType}):* ${CAMPAIGN.pixKey}\n` +
+    `*Nome:* ${CAMPAIGN.pixHolderName}\n\n` +
+    `Assim que fizer o pagamento, me envia o comprovante por aqui que eu já confirmo ` +
+    `seu${plural ? "s" : ""} número${plural ? "s" : ""}. Qualquer dúvida, estou à disposição. Obrigado pelo apoio!`
   );
 }
 
