@@ -76,12 +76,9 @@ export const CAMPAIGN = {
   // false = campanha normal (tudo abaixo é ignorado).
   // ---------------------------------------------------------------------
   cancelled: true,
-  cancelledAtLabel: "outubro de 2026",
   cancelledReason:
     "A rifa não alcançou a quantidade mínima de números vendidos para que o sorteio " +
     "fosse justo e os prêmios pudessem ser entregues com segurança.",
-  // Prazo em que o organizador se compromete a devolver cada Pix recebido
-  refundDeadlineLabel: "até 5 dias úteis após receber a chave Pix",
 } as const;
 
 export function formatBRL(cents: number): string {
@@ -210,7 +207,7 @@ export function buildCancellationMessage(
 ` +
       `*Para isso, me envia por aqui a sua chave Pix* (CPF, telefone, e-mail ou chave aleatória) ` +
       `e o nome do titular da conta. Assim que eu receber, faço a transferência ` +
-      `${CAMPAIGN.refundDeadlineLabel} e te mando o comprovante.
+      `e te mando o comprovante.
 
 `
     : `Sua reserva do${plural ? "s" : ""} número${plural ? "s" : ""} *${nums}* não precisa de nenhuma ` +

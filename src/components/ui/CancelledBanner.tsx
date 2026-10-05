@@ -44,8 +44,7 @@ export function CancelledBanner({ variant = "bar" }: Props) {
       <div className="mt-3 space-y-3 text-sm leading-relaxed text-stone-700">
         <p>
           Com o coração apertado, mas com muita gratidão, informamos que a
-          rifa do {CAMPAIGN.childName} foi{" "}
-          <strong>cancelada em {CAMPAIGN.cancelledAtLabel}</strong>.
+          rifa do {CAMPAIGN.childName} <strong>foi cancelada</strong>.
         </p>
         <p>{CAMPAIGN.cancelledReason}</p>
         <p>
@@ -54,8 +53,7 @@ export function CancelledBanner({ variant = "bar" }: Props) {
             todos os valores pagos serão devolvidos de forma integral
           </strong>
           , via Pix. Se você pagou algum número, envie sua chave Pix e o nome
-          do titular pelo WhatsApp. A devolução é feita{" "}
-          {CAMPAIGN.refundDeadlineLabel}, com envio do comprovante.
+          do titular pelo WhatsApp e você recebe o comprovante da devolução.
         </p>
         <p>
           Obrigado de verdade a cada pessoa que participou, compartilhou ou
