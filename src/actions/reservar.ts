@@ -20,7 +20,7 @@ export type ReserveResult =
     }
   | {
       ok: false;
-      error: "VALIDATION" | "RATE_LIMITED" | "NUMBERS_TAKEN" | "INTERNAL";
+      error: "VALIDATION" | "RATE_LIMITED" | "NUMBERS_TAKEN" | "CANCELLED" | "INTERNAL";
       message: string;
       takenNumbers?: number[];
     };
@@ -40,6 +40,15 @@ export async function reservarNumeros(input: {
   phone: string;
   website?: string;
 }): Promise<ReserveResult> {
+  // Rifa cancelada: nenhuma reserva nova entra, mesmo via chamada direta.
+  if (CAMPAIGN.cancelled) {
+    return {
+      ok: false,
+      error: "CANCELLED",
+      message: "A rifa foi cancelada e não aceita mais reservas.",
+    };
+  }
+
   const parsed = reservationSchema.safeParse(input);
   if (!parsed.success) {
     return {

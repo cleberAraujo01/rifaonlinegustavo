@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { MessageCircle, Send } from "lucide-react";
+import { AlertTriangle, MessageCircle, Send } from "lucide-react";
 import { cancelarPedido, confirmarPagamento } from "@/actions/admin";
 import {
+  CAMPAIGN,
+  buildCancellationMessage,
   buildChargeMessage,
   buildConfirmationMessage,
   buildReinviteMessage,
@@ -71,6 +73,11 @@ export function OrderRow({
   const smallBtn =
     "inline-flex h-8 items-center gap-1 rounded-lg px-2.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-grass-700";
 
+  // Rifa cancelada: quem pagou recebe o pedido de chave Pix para devolução;
+  // quem só reservou recebe o aviso e o agradecimento.
+  const cancelNotice =
+    CAMPAIGN.cancelled && (status === "paid" || status === "pending");
+
   return (
     <li
       className={`bg-white px-3 py-2 first:rounded-t-xl last:rounded-b-xl ${
@@ -131,7 +138,23 @@ export function OrderRow({
 
         {/* Ações */}
         <div className="flex shrink-0 items-center gap-1">
-          {status === "pending" && (
+          {cancelNotice && (
+            <a
+              href={`https://wa.me/${buyerPhone}?text=${encodeURIComponent(
+                buildCancellationMessage(numbers, buyerName, status === "paid"),
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`Enviar aviso de cancelamento para ${buyerName}`}
+              aria-label={`Enviar aviso de cancelamento${status === "paid" ? " e pedido de chave Pix" : ""} para ${buyerName} no WhatsApp`}
+              className={`${smallBtn} bg-red-600 text-white hover:bg-red-700`}
+            >
+              <AlertTriangle className="h-3.5 w-3.5" aria-hidden />
+              {status === "paid" ? "Devolução" : "Aviso"}
+            </a>
+          )}
+
+          {status === "pending" && !CAMPAIGN.cancelled && (
             <>
               <button
                 type="button"

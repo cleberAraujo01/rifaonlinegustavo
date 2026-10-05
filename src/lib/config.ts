@@ -68,6 +68,20 @@ export const CAMPAIGN = {
   reservationHours: 24 * 7, // 1 semana para pagar; depois a reserva expira sozinha
   reservationLabel: "1 semana", // como o prazo aparece nos textos do site
   maxNumbersPerOrder: 20,
+
+  // ---------------------------------------------------------------------
+  // CANCELAMENTO DA RIFA
+  // true = tarja "Rifa cancelada" em todas as páginas, grade e reservas
+  // bloqueadas e botões de "aviso de cancelamento" no painel.
+  // false = campanha normal (tudo abaixo é ignorado).
+  // ---------------------------------------------------------------------
+  cancelled: true,
+  cancelledAtLabel: "outubro de 2026",
+  cancelledReason:
+    "A rifa não alcançou a quantidade mínima de números vendidos para que o sorteio " +
+    "fosse justo e os prêmios pudessem ser entregues com segurança.",
+  // Prazo em que o organizador se compromete a devolver cada Pix recebido
+  refundDeadlineLabel: "até 5 dias úteis após receber a chave Pix",
 } as const;
 
 export function formatBRL(cents: number): string {
@@ -159,4 +173,60 @@ export function buildConfirmationMessage(
     `Seu comprovante permanente:\n${orderUrl}\n\n` +
     `Muito obrigado por fazer parte desse sonho! Boa sorte no sorteio!`
   );
+}
+
+/**
+ * Aviso de cancelamento da rifa, enviado a cada participante pelo painel
+ * (botão individual e disparo em massa). Para quem pagou, pede a chave Pix
+ * para a devolução integral; para quem só reservou, apenas agradece.
+ * Sem emojis de propósito (ver aviso em buildConfirmationMessage).
+ */
+export function buildCancellationMessage(
+  numbers: number[],
+  buyerName: string,
+  paid: boolean,
+): string {
+  const firstName = buyerName.trim().split(/\s+/)[0];
+  const plural = numbers.length > 1;
+  const nums = numbers.map(formatNumber).join(", ");
+  const total = formatBRL(numbers.length * CAMPAIGN.pricePerNumberCents);
+
+  const intro =
+    `Olá, ${firstName}, tudo bem? Aqui é o ${CAMPAIGN.organizerName}, da rifa do ${CAMPAIGN.childName}.
+
+` +
+    `Venho com o coração apertado, mas com muita gratidão, para te dar uma notícia: ` +
+    `*precisamos cancelar a rifa.* Infelizmente não houve adesão suficiente, e a quantidade de números ` +
+    `vendidos ficou bem abaixo do necessário para realizar um sorteio justo e entregar os prêmios ` +
+    `como prometemos. Seguir em frente assim não seria correto com ninguém, principalmente com você, ` +
+    `que confiou na gente.
+
+`;
+
+  const refund = paid
+    ? `Como você pagou o${plural ? "s" : ""} número${plural ? "s" : ""} *${nums}* (${total}), ` +
+      `vou devolver *100% do valor* via Pix, conforme prometido na nossa garantia de devolução.
+
+` +
+      `*Para isso, me envia por aqui a sua chave Pix* (CPF, telefone, e-mail ou chave aleatória) ` +
+      `e o nome do titular da conta. Assim que eu receber, faço a transferência ` +
+      `${CAMPAIGN.refundDeadlineLabel} e te mando o comprovante.
+
+`
+    : `Sua reserva do${plural ? "s" : ""} número${plural ? "s" : ""} *${nums}* não precisa de nenhuma ` +
+      `providência: como o pagamento não chegou a ser feito, não há valor a devolver. ` +
+      `Se você fez algum Pix e ele ainda não tinha sido confirmado, me avisa por aqui com o ` +
+      `comprovante e a sua chave Pix que eu devolvo o valor integralmente.
+
+`;
+
+  const thanks =
+    `Quero agradecer de verdade pelo seu apoio e pelo carinho com o sonho do ${CAMPAIGN.childName}. ` +
+    `Cada pessoa que participou, compartilhou ou torceu fez diferença, e isso a gente leva com a gente. ` +
+    `O sonho continua, só vai mudar o caminho.
+
+` +
+    `Qualquer dúvida, é só me chamar por aqui. Muito obrigado por tudo!`;
+
+  return intro + refund + thanks;
 }

@@ -2,9 +2,15 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MessageCircle, Search } from "lucide-react";
+import { AlertTriangle, MessageCircle, Search } from "lucide-react";
 import { confirmarPagamentos } from "@/actions/admin";
-import { buildChargeMessage, formatBRL, formatNumber } from "@/lib/config";
+import {
+  CAMPAIGN,
+  buildCancellationMessage,
+  buildChargeMessage,
+  formatBRL,
+  formatNumber,
+} from "@/lib/config";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { OrderRow } from "@/components/admin/OrderRow";
 
@@ -89,6 +95,7 @@ export function OrdersPanel({ orders, siteUrl }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkConfirmOpen, setBulkConfirmOpen] = useState(false);
   const [bulkChargeOpen, setBulkChargeOpen] = useState(false);
+  const [bulkCancelOpen, setBulkCancelOpen] = useState(false);
   const [bulkError, setBulkError] = useState<string | null>(null);
   const [bulkBusy, startBulk] = useTransition();
 
@@ -131,9 +138,12 @@ export function OrdersPanel({ orders, siteUrl }: Props) {
   const safePage = Math.min(page, pageCount);
   const pageItems = list.slice((safePage - 1) * perPage, safePage * perPage);
 
-  const selectable = chip === "pending";
+  // Pendentes sempre têm ações em massa; com a rifa cancelada, os
+  // confirmados também (disparo do aviso de devolução).
+  const selectable =
+    chip === "pending" || (CAMPAIGN.cancelled && chip === "paid");
   const selectedOrders = orders.filter(
-    (o) => selected.has(o.orderId) && o.status === "pending",
+    (o) => selected.has(o.orderId) && o.status === chip,
   );
   const pageAllSelected =
     selectable &&
@@ -292,25 +302,42 @@ export function OrdersPanel({ orders, siteUrl }: Props) {
                 selectedOrders.reduce((sum, o) => sum + o.totalCents, 0),
               )}
             </span>
-            <div className="ml-auto flex gap-1.5">
-              <button
-                type="button"
-                onClick={() => setBulkConfirmOpen(true)}
-                className="rounded-lg bg-grass-600 px-2.5 py-1.5 text-xs font-extrabold hover:bg-grass-500"
-              >
-                ✓ Confirmar selecionados
-              </button>
-              <button
-                type="button"
-                onClick={() => setBulkChargeOpen(true)}
-                className="rounded-lg bg-whatsapp px-2.5 py-1.5 text-xs font-extrabold hover:bg-whatsapp-dark"
-              >
-                <MessageCircle
-                  className="mr-1 inline h-3.5 w-3.5"
-                  aria-hidden
-                />
-                Cobrar em massa
-              </button>
+            <div className="ml-auto flex flex-wrap gap-1.5">
+              {CAMPAIGN.cancelled && (
+                <button
+                  type="button"
+                  onClick={() => setBulkCancelOpen(true)}
+                  className="rounded-lg bg-red-600 px-2.5 py-1.5 text-xs font-extrabold hover:bg-red-500"
+                >
+                  <AlertTriangle
+                    className="mr-1 inline h-3.5 w-3.5"
+                    aria-hidden
+                  />
+                  Aviso de cancelamento
+                </button>
+              )}
+              {chip === "pending" && !CAMPAIGN.cancelled && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setBulkConfirmOpen(true)}
+                    className="rounded-lg bg-grass-600 px-2.5 py-1.5 text-xs font-extrabold hover:bg-grass-500"
+                  >
+                    ✓ Confirmar selecionados
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBulkChargeOpen(true)}
+                    className="rounded-lg bg-whatsapp px-2.5 py-1.5 text-xs font-extrabold hover:bg-whatsapp-dark"
+                  >
+                    <MessageCircle
+                      className="mr-1 inline h-3.5 w-3.5"
+                      aria-hidden
+                    />
+                    Cobrar em massa
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -412,6 +439,45 @@ export function OrdersPanel({ orders, siteUrl }: Props) {
         <p className="mt-2 text-xs text-stone-500">
           Use somente depois de conferir os comprovantes de todos.
         </p>
+      </ConfirmDialog>
+
+      {/* Aviso de cancelamento em massa: mesma mecânica da cobrança, uma
+          conversa pronta por participante (pagos recebem o pedido de Pix) */}
+      <ConfirmDialog
+        open={bulkCancelOpen}
+        title={`Avisar ${selectedOrders.length} participante${selectedOrders.length > 1 ? "s" : ""} do cancelamento`}
+        confirmLabel="Concluir"
+        onConfirm={() => setBulkCancelOpen(false)}
+        onCancel={() => setBulkCancelOpen(false)}
+      >
+        <p className="mb-2 text-xs text-stone-500">
+          Toque em cada nome: a conversa abre com o aviso pronto
+          {chip === "paid" ? " e o pedido da chave Pix para devolução" : ""}.
+          Envie e volte aqui para o próximo.
+        </p>
+        <ul className="max-h-48 space-y-1.5 overflow-y-auto">
+          {selectedOrders.map((o) => (
+            <li key={o.orderId}>
+              <a
+                href={`https://wa.me/${o.buyerPhone}?text=${encodeURIComponent(
+                  buildCancellationMessage(
+                    o.numbers,
+                    o.buyerName,
+                    o.status === "paid",
+                  ),
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-800 transition-colors visited:opacity-50 hover:bg-red-100"
+              >
+                <span className="truncate">{o.buyerName}</span>
+                <span className="tabular shrink-0 text-stone-500">
+                  {formatBRL(o.totalCents)}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </ConfirmDialog>
 
       {/* Cobrança em massa: o WhatsApp não permite envio automático em lote —

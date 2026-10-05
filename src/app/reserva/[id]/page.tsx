@@ -19,6 +19,7 @@ import {
 import { getOrderWithNumbers } from "@/db/queries";
 import { PixCopyField } from "@/components/ui/PixCopyField";
 import { Deadline } from "@/components/ui/Deadline";
+import { CancelledBanner } from "@/components/ui/CancelledBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -57,11 +58,29 @@ export default async function ReservaPage({
   const isExpired =
     order.status === "cancelled" ||
     (order.status === "reserved" && order.reservedUntil.getTime() < Date.now());
+  const cancelled = CAMPAIGN.cancelled;
 
   return (
-    <main className="mx-auto w-full max-w-lg flex-1 px-4 pb-10">
+    <main className="mx-auto w-full max-w-lg flex-1 pb-10">
+      {cancelled && <CancelledBanner />}
+      <div className="px-4">
       <header className="py-6 text-center">
-        {isPaid ? (
+        {cancelled ? (
+          <>
+            <ShieldCheck
+              className="mx-auto h-12 w-12 text-red-600"
+              aria-hidden
+            />
+            <h1 className="mt-2 text-2xl font-extrabold text-red-700">
+              Rifa cancelada
+            </h1>
+            <p className="mt-1 text-stone-600">
+              {isPaid
+                ? `${order.buyerName.split(" ")[0]}, seu pagamento de ${formatBRL(order.totalCents)} será devolvido integralmente via Pix.`
+                : "Esta reserva não precisa de nenhuma providência: nenhum valor foi pago."}
+            </p>
+          </>
+        ) : isPaid ? (
           <>
             <CheckCircle2
               className="mx-auto h-12 w-12 text-grass-600"
@@ -117,7 +136,13 @@ export default async function ReservaPage({
         ))}
       </div>
 
-      {!isPaid && !isExpired && (
+      {cancelled && (
+        <div className="mt-8">
+          <CancelledBanner variant="card" />
+        </div>
+      )}
+
+      {!cancelled && !isPaid && !isExpired && (
         <div className="mt-8 space-y-6">
           {/* Passo 1: Pix */}
           <section>
@@ -176,7 +201,7 @@ export default async function ReservaPage({
         </div>
       )}
 
-      {isExpired && (
+      {!cancelled && isExpired && (
         <div className="mt-8">
           <Link
             href="/numeros"
@@ -189,7 +214,7 @@ export default async function ReservaPage({
 
       {/* Convite para o grupo de avisos: momento ideal — a pessoa acabou de
           reservar/pagar e quer acompanhar o sorteio */}
-      {!isExpired && CAMPAIGN.whatsappGroupUrl && (
+      {!cancelled && !isExpired && CAMPAIGN.whatsappGroupUrl && (
         <a
           href={CAMPAIGN.whatsappGroupUrl}
           target="_blank"
@@ -216,6 +241,7 @@ export default async function ReservaPage({
           ← Voltar para a página da rifa
         </Link>
       </p>
+      </div>
     </main>
   );
 }

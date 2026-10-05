@@ -17,6 +17,7 @@ import { ProgressBar } from "@/components/landing/ProgressBar";
 import { StickyHeader } from "@/components/landing/StickyHeader";
 import { StickyCtaBar } from "@/components/landing/StickyCtaBar";
 import { SmartImage } from "@/components/ui/SmartImage";
+import { CancelledBanner } from "@/components/ui/CancelledBanner";
 import { getGridStateSafe } from "@/db/queries";
 
 // Landing revalida a cada 60s: abre instantânea e o progresso fica quase em tempo real.
@@ -45,10 +46,12 @@ export default async function Home() {
   const drawDateLabel = CAMPAIGN.drawDate ? CAMPAIGN.drawDateLabel : "em breve";
 
   const goalPct = Math.min(100, (stats.raisedCents / CAMPAIGN.goalCents) * 100);
+  const cancelled = CAMPAIGN.cancelled;
 
   return (
-    <main className="flex-1 pb-24">
-      <StickyHeader pct={goalPct} />
+    <main className={`flex-1 ${cancelled ? "pb-10" : "pb-24"}`}>
+      {/* Tarja de cancelamento substitui o cabeçalho de progresso */}
+      {cancelled ? <CancelledBanner /> : <StickyHeader pct={goalPct} />}
 
       {/* Hero: coluna única no mobile, texto + foto lado a lado no desktop */}
       <header className="bg-grass-900 px-5 pb-8 pt-10 text-white">
@@ -58,19 +61,25 @@ export default async function Home() {
               Rifa solidária
             </p>
             <h1 className="text-3xl font-extrabold leading-tight md:text-4xl">
-              Ajude o {CAMPAIGN.childName} a jogar futebol em Portugal
+              {cancelled
+                ? `Obrigado por apoiar o sonho do ${CAMPAIGN.childName}`
+                : `Ajude o ${CAMPAIGN.childName} a jogar futebol em Portugal`}
             </h1>
             <p className="mt-3 text-grass-100">
-              Cada número vendido é um passo rumo aos testes nos clubes portugueses.
+              {cancelled
+                ? "Esta campanha foi encerrada. Obrigado a todos que apoiaram: os valores pagos estão sendo devolvidos."
+                : "Cada número vendido é um passo rumo aos testes nos clubes portugueses."}
             </p>
 
-            <Link
-              id="hero-cta"
-              href="/numeros"
-              className="mt-5 block rounded-xl bg-gold-500 px-8 py-3.5 text-center text-base font-extrabold text-grass-950 shadow-lg transition-colors hover:bg-gold-400 active:bg-gold-600 md:inline-block"
-            >
-              QUERO AJUDAR · ESCOLHER NÚMEROS →
-            </Link>
+            {!cancelled && (
+              <Link
+                id="hero-cta"
+                href="/numeros"
+                className="mt-5 block rounded-xl bg-gold-500 px-8 py-3.5 text-center text-base font-extrabold text-grass-950 shadow-lg transition-colors hover:bg-gold-400 active:bg-gold-600 md:inline-block"
+              >
+                QUERO AJUDAR · ESCOLHER NÚMEROS →
+              </Link>
+            )}
           </div>
 
           {/* Foto do Gustavo em ação: public/images/hero.jpg */}
@@ -96,7 +105,11 @@ export default async function Home() {
         {/* Coluna de conversão */}
         {/* top-16 = folga para o cabeçalho sticky não cobrir os cartões */}
         <div className="-mt-5 space-y-4 md:sticky md:top-16 md:order-2 md:col-span-2 md:mt-8">
+          {/* Rifa cancelada: motivo + como pedir a devolução */}
+          {cancelled && <CancelledBanner variant="card" />}
+
           {/* Cartão dos prêmios: 1º em destaque com imagem, 2º e 3º logo abaixo */}
+          {!cancelled && (
           <section className="rounded-2xl bg-white p-4 shadow-md ring-1 ring-grass-100">
             <p className="mb-3 flex items-center justify-center gap-1.5 rounded-xl bg-grass-900 px-3 py-2 text-sm font-extrabold uppercase tracking-widest text-gold-400">
               <Trophy className="h-4 w-4" aria-hidden /> 3 chances de ganhar
@@ -181,11 +194,14 @@ export default async function Home() {
               </p>
             )}
           </section>
+          )}
 
           {/* Progresso da meta */}
-          <section>
-            <ProgressBar {...stats} />
-          </section>
+          {!cancelled && (
+            <section>
+              <ProgressBar {...stats} />
+            </section>
+          )}
 
           {/* Grupo de avisos no WhatsApp */}
           {CAMPAIGN.whatsappGroupUrl && (
@@ -304,6 +320,7 @@ export default async function Home() {
           </section>
 
           {/* Como funciona */}
+          {!cancelled && (
           <section className="mt-8">
             <h2 className="mb-4 text-xl font-extrabold text-grass-900">
               Como funciona
@@ -325,8 +342,10 @@ export default async function Home() {
               ))}
             </ol>
           </section>
+          )}
 
           {/* Regra do sorteio */}
+          {!cancelled && (
           <section className="mt-8">
             <div className="rounded-2xl bg-grass-900 p-5 text-white">
               <h2 className="mb-2 flex items-center gap-2 text-lg font-extrabold text-gold-400">
@@ -351,6 +370,7 @@ export default async function Home() {
               </p>
             </div>
           </section>
+          )}
 
           {/* Garantia de devolução */}
           <section className="mt-4">
@@ -360,11 +380,26 @@ export default async function Home() {
                 Garantia de devolução
               </h2>
               <p className="text-sm leading-relaxed text-stone-700">
-                Se a rifa não for vendida por completo até a data do sorteio,{" "}
-                <strong>
-                  todos os valores pagos serão devolvidos de forma integral
-                </strong>
-                , via Pix, para cada comprador. Risco zero para quem apoia.
+                {cancelled ? (
+                  <>
+                    Como a rifa foi cancelada,{" "}
+                    <strong>
+                      todos os valores pagos estão sendo devolvidos de forma
+                      integral
+                    </strong>
+                    , via Pix, para cada comprador. Basta enviar sua chave Pix
+                    pelo WhatsApp.
+                  </>
+                ) : (
+                  <>
+                    Se a rifa não for vendida por completo até a data do
+                    sorteio,{" "}
+                    <strong>
+                      todos os valores pagos serão devolvidos de forma integral
+                    </strong>
+                    , via Pix, para cada comprador. Risco zero para quem apoia.
+                  </>
+                )}
               </p>
             </div>
           </section>
@@ -395,11 +430,13 @@ export default async function Home() {
       </section>
 
       {/* CTA fixo: só aparece quando o CTA do herói sai da tela (um CTA dominante por vez) */}
-      <StickyCtaBar
-        href="/numeros"
-        label="ESCOLHER MEUS NÚMEROS →"
-        watchId="hero-cta"
-      />
+      {!cancelled && (
+        <StickyCtaBar
+          href="/numeros"
+          label="ESCOLHER MEUS NÚMEROS →"
+          watchId="hero-cta"
+        />
+      )}
     </main>
   );
 }
